@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-between align-center mb-2">
+    <h2>Mis Asesorías</h2>
+    <a href="{{ url_for('asesor.new_session') }}" class="btn btn-primary">Crear Nueva Asesoría</a>
+</div>
+
+{% if sessions %}
+<div class="grid-cards mt-2">
+    {% for session in sessions %}
+    <div class="glass card">
+        <div class="d-flex justify-between align-center mb-2">
+            <h3 style="margin: 0; color: var(--primary-color);">{{ session.topic }}</h3>
+            <span class="badge">{{ session.session_type }}</span>
+        </div>
+        <p style="font-size: 0.9rem;"><strong>Fecha:</strong> {{ session.date.strftime('%d/%m/%Y') }}</p>
+        <p style="font-size: 0.9rem;"><strong>Horario:</strong> {{ session.start_time.strftime('%H:%M') }} - {{ session.end_time.strftime('%H:%M') }}</p>
+        <p style="font-size: 0.9rem;"><strong>Cupo:</strong> {{ session.enrollments|length }} / {{ session.capacity }}</p>
+        <p style="margin-top: 1rem;">{{ session.description[:100] }}...</p>
+        <div class="d-flex gap-1 mt-2">
+            <a href="{{ url_for('asesor.edit_session', session_id=session.id) }}" class="btn glass" style="flex:1; padding: 0.5rem; color:white;">Editar</a>
+            <form action="{{ url_for('asesor.delete_session', session_id=session.id) }}" method="POST" style="flex:1; display:flex;">
+                <button type="submit" class="btn btn-danger" style="flex:1; padding: 0.5rem;" onclick="return confirm('¿Eliminar asesoría?');">Eliminar</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-center mt-4 glass card">No tienes asesorías creadas aún.</p>
+{% endif %}
+{% endblock %}

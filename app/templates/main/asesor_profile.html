@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="glass card d-flex gap-1 align-center mb-2" style="padding: 2rem; flex-wrap: wrap;">
+    <div style="flex: 2; min-width: 300px;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--primary-color);">{{ asesor.profile.full_name or asesor.username }}</h2>
+        <span class="badge">Asesor Académico</span>
+        <div class="mt-2">
+            <p><strong>Temas que domina:</strong> {{ asesor.profile.strengths or 'No especificado' }}</p>
+            <p><strong>Área enfocada:</strong> {{ asesor.profile.focus_areas or 'No especificado' }}</p>
+            <p class="mt-2">{{ asesor.profile.bio or 'Sin biografía disponible.' }}</p>
+        </div>
+    </div>
+    <div style="flex: 1; text-align: center; min-width: 200px;">
+        <div class="glass" style="display: inline-block; padding: 1.5rem; text-align: center; background: rgba(0,0,0,0.2);">
+            <p style="font-size: 1.2rem; color: var(--text-secondary); margin: 0;">Calificación General</p>
+            <div class="star-rating" style="font-size: 3rem; font-weight: 700;">
+                {{ asesor.profile.rating_avg }} <span style="font-size: 1.5rem; color: var(--text-secondary);">/ 5</span>
+            </div>
+            <p style="font-size: 0.9rem; margin: 0;">({{ reviews|length }} reseñas)</p>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex gap-1" style="align-items: flex-start; flex-wrap: wrap;">
+    <!-- Asesorías Activas -->
+    <div style="flex: 2; min-width: 300px;">
+        <h3 class="mb-2">Asesorías Programadas</h3>
+        {% if sessions %}
+            {% for session in sessions %}
+            <div class="glass card mb-2" style="padding: 1.5rem;">
+                <div class="d-flex justify-between align-center mb-2">
+                    <h4 style="margin: 0; color: var(--primary-color);">{{ session.topic }}</h4>
+                    <span class="badge">{{ session.session_type }}</span>
+                </div>
+                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Fecha:</strong> {{ session.date.strftime('%d/%m/%Y') }} a las {{ session.start_time.strftime('%H:%M') }}</p>
+                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Cupo:</strong> {{ session.enrollments|length }} / {{ session.capacity }}</p>
+                <p style="margin-bottom: 1rem; font-size: 0.9rem;">{{ session.description }}</p>
+                {% if current_user.is_authenticated and current_user.role == 'Estudiante' %}
+                    {% if session.enrollments|length < session.capacity %}
+                    <form action="{{ url_for('estudiante.enroll', session_id=session.id) }}" method="POST">
+                        <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.5rem 1rem;">Inscribirse como Estudiante</button>
+                    </form>
+                    {% else %}
+                        <button class="btn glass" disabled style="color: var(--text-secondary); cursor: not-allowed;">Asesoría Llena</button>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="glass card">Este asesor no tiene asesorías programadas actualmente.</p>
+        {% endif %}
+    </div>
+
+    <!-- Comentarios -->
+    <div style="flex: 1; min-width: 300px;">
+        <h3 class="mb-2">Reseñas de Estudiantes</h3>
+        {% if reviews %}
+            <div class="glass card" style="padding: 1.5rem; max-height: 600px; overflow-y: auto;">
+                {% for review in reviews %}
+                <div style="border-bottom: 1px solid var(--surface-border); padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <div class="d-flex justify-between align-center mb-2">
+                        <strong>{{ review.student_reviewer.profile.full_name or review.student_reviewer.username }}</strong>
+                        <span class="star-rating" style="font-size: 1rem;">★ {{ review.rating }}</span>
+                    </div>
+                    {% if review.comment %}
+                        <p style="font-size: 0.9rem; font-style: italic;">"{{ review.comment }}"</p>
+                    {% else %}
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Sin comentario adicional.</p>
+                    {% endif %}
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); text-align: right; margin: 0;">{{ review.created_at.strftime('%d/%m/%Y') }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="glass card">Aún no hay reseñas.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

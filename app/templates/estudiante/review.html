@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-container glass card" style="max-width: 600px;">
+    <h2 class="text-center mb-2">Calificar Asesoría</h2>
+    <div class="mb-2" style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px;">
+        <h4 style="color: var(--primary-color);">{{ session.topic }}</h4>
+        <p style="font-size: 0.9rem; margin-bottom: 0;"><strong>Asesor:</strong> {{ session.asesor.profile.full_name or session.asesor.username }}</p>
+        <p style="font-size: 0.9rem; margin-bottom: 0;"><strong>Fecha:</strong> {{ session.date.strftime('%d/%m/%Y') }}</p>
+    </div>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-group text-center">
+            {{ form.rating.label }} <br>
+            <div class="star-rating d-flex justify-center gap-1 mt-2 mb-2" style="font-size: 2rem;">
+                {{ form.rating(class="form-control text-center", type="number", min="1", max="5", style="width: 100px; margin: 0 auto; font-size: 1.5rem;") }}
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">1 = Pobre, 5 = Excelente</p>
+        </div>
+        <div class="form-group">{{ form.comment.label }} {{ form.comment(class="form-control", rows=4) }}</div>
+        <div class="form-group mt-2">
+            {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

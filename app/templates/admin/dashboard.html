@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-between align-center mb-2">
+    <h2>Panel de Administración</h2>
+    <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary">Crear Nuevo Usuario (Admin/Asesor)</a>
+</div>
+
+<div class="glass card" style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="border-bottom: 1px solid var(--surface-border);">
+                <th style="padding: 1rem;">ID</th>
+                <th style="padding: 1rem;">Usuario</th>
+                <th style="padding: 1rem;">Rol</th>
+                <th style="padding: 1rem;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr style="border-bottom: 1px solid var(--surface-border);">
+                <td style="padding: 1rem;">{{ user.id }}</td>
+                <td style="padding: 1rem;">{{ user.username }}</td>
+                <td style="padding: 1rem;"><span class="badge">{{ user.role }}</span></td>
+                <td style="padding: 1rem;">
+                    {% if user.id != current_user.id and user.role != 'Super-Admin' %}
+                        {% if current_user.role == 'Super-Admin' or (current_user.role == 'Admin' and user.role not in ['Super-Admin', 'Admin']) %}
+                            <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="return confirm('¿Estás seguro de eliminar a este usuario?');">Eliminar</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

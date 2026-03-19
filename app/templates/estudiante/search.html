@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% set title = 'Panel de Estudiante' %}
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;" class="dashboard-grid">
+    <div>
+        <!-- Search Widget -->
+        <div class="widget">
+            <div class="widget-header">
+                🔍 Buscar Asesores Disponibles
+            </div>
+            <div class="widget-body">
+                <form method="GET" action="{{ url_for('estudiante.search') }}" class="d-flex gap-1 align-center" style="flex-wrap: wrap;">
+                    <input type="text" name="topic" placeholder="Buscar por tema..." class="form-control" style="flex: 2; min-width: 200px;" value="{{ request.args.get('topic', '') }}">
+                    <select name="session_type" class="form-select" style="flex: 1; min-width: 150px;">
+                        <option value="">Cualquier tipo</option>
+                        <option value="Individual" {% if request.args.get('session_type') == 'Individual' %}selected{% endif %}>Individual</option>
+                        <option value="Grupal" {% if request.args.get('session_type') == 'Grupal' %}selected{% endif %}>Grupal</option>
+                    </select>
+                    <input type="date" name="date" class="form-control" style="flex: 1; min-width: 150px;" value="{{ request.args.get('date', '') }}">
+                    <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 120px;">Filtrar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recommendations Widget -->
+        <div class="widget mt-4">
+            <div class="widget-header">
+                👨‍🏫 Asesores Recomendados
+                {% if sessions %}
+                <span style="font-size: 0.8rem; font-weight: 400; color: #ccc;">{{ sessions|length }} disponibles</span>
+                {% endif %}
+            </div>
+            <div class="widget-body" style="background-color: var(--bg-color);">
+                {% if sessions %}
+                <div class="grid-cards">
+                    {% for session in sessions %}
+                    <div class="glass card">
+                        <div class="d-flex justify-between align-center mb-2">
+                            <h3 style="margin: 0; color: var(--primary-color);">{{ session.topic }}</h3>
+                            <span class="badge">{{ session.session_type }}</span>
+                        </div>
+                        <p style="font-size: 0.9rem;"><strong>Asesor:</strong> <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" style="color: var(--primary-color);">{{ session.asesor.profile.full_name or session.asesor.username }}</a></p>
+                        <p style="font-size: 0.9rem;"><strong>Fecha:</strong> {{ session.date.strftime('%d/%m/%Y') }}</p>
+                        <p style="font-size: 0.9rem;"><strong>Horario:</strong> {{ session.start_time.strftime('%H:%M') }} - {{ session.end_time.strftime('%H:%M') }}</p>
+                        <p style="font-size: 0.9rem;"><strong>Cupo:</strong> {{ session.enrollments|length }} / {{ session.capacity }}</p>
+                        <p style="margin-top: 1rem; font-size: 0.95rem;">{{ session.description[:100] }}...</p>
+                        
+                        <div class="mt-2 text-center">
+                            {% if session.enrollments|length >= session.capacity %}
+                                <button class="btn glass" style="width: 100%; color: var(--text-secondary); cursor: not-allowed;" disabled>Asesoría Llena</button>
+                            {% else %}
+                                <form action="{{ url_for('estudiante.enroll', session_id=session.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-primary" style="background-color: var(--text-primary); color: var(--bg-color); width: 100%;">SOLICITAR ASESORÍA</button>
+                                </form>
+                            {% endif %}
+                            <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" class="btn mt-2" style="width: 100%; background: none; border: 1px solid var(--surface-border); border-radius: 8px;">VER PERFIL</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center mt-4">No se encontraron asesorías disponibles con esos filtros.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Widget (Right Sidebar) -->
+    <div>
+        <div class="widget">
+            <div class="widget-header">
+                👤 Mi Perfil
+            </div>
+            <div class="widget-body text-center">
+                <div style="width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-color); color: #F5EFD9; font-size: 3rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; font-weight: bold;">
+                    {{ current_user.username[0]|upper }}
+                </div>
+                <h3 style="margin-bottom: 0.25rem; color: var(--text-primary);">{{ current_user.profile.full_name or current_user.username }}</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Estudiante</p>
+                
+                {% if current_user.profile.focus_areas %}
+                <span class="badge" style="display: inline-block; margin-bottom: 1.5rem; background: var(--surface-color); color: var(--text-primary);">{{ current_user.profile.focus_areas }}</span>
+                {% endif %}
+                
+                <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 1.5rem 0;">
+                
+                <div style="text-align: center; padding: 0 1rem;">
+                    <h2 style="margin: 0; color: var(--text-primary);">{{ current_user.enrollments|length }}</h2>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.05em;">SESIONES TOTALES</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+{% endblock %}

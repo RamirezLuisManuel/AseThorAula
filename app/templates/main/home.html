@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center mt-4">
+    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="AseThorAula Logo" style="display: block; margin: 0 auto 1.5rem auto; height: 180px; width: 180px; object-fit: cover; border-radius: 50%;">
+    <h1 style="font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(135deg, #1B101E, #927B65); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AseThorAula</h1>
+    <p style="font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 3rem auto;">Encuentra asesorías académicas impartidas por estudiantes para estudiantes. Mejora tus habilidades o comparte tu conocimiento.</p>
+    
+    {% if not current_user.is_authenticated %}
+        <div class="d-flex gap-1" style="justify-content: center;">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">Unirse como Estudiante</a>
+            <a href="{{ url_for('auth.login') }}" class="btn glass" style="font-size: 1.1rem; padding: 1rem 2rem; color: white;">Iniciar Sesión</a>
+        </div>
+    {% else %}
+        <div class="glass card" style="max-width: 600px; margin: 0 auto;">
+            <h2>Bienvenido, {{ current_user.profile.full_name or current_user.username }}</h2>
+            <p>Has iniciado sesión como <strong>{{ current_user.role }}</strong>.</p>
+            <div class="mt-2 text-center">
+                {% if current_user.role == 'Super-Admin' or current_user.role == 'Admin' %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">Ir al Panel de Administración</a>
+                {% elif current_user.role == 'Asesor' %}
+                    <a href="{{ url_for('asesor.sessions') }}" class="btn btn-primary">Gestionar mis Asesorías</a>
+                {% elif current_user.role == 'Estudiante' %}
+                    <a href="{{ url_for('estudiante.search') }}" class="btn btn-primary">Buscar Asesorías Disponibles</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

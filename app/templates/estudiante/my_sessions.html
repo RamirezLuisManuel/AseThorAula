@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-2">Mis Asesorías Inscritas</h2>
+
+{% if enrollments %}
+<div class="grid-cards mt-2">
+    {% for enrollment in enrollments %}
+    <div class="glass card">
+        <div class="d-flex justify-between align-center mb-2">
+            <h3 style="margin: 0; color: var(--primary-color);">{{ enrollment.session.topic }}</h3>
+            <span class="badge">{{ enrollment.session.session_type }}</span>
+        </div>
+        <p style="font-size: 0.9rem;"><strong>Asesor:</strong> <a href="{{ url_for('main.asesor_profile', asesor_id=enrollment.session.asesor_id) }}" style="color: var(--primary-color);">{{ enrollment.session.asesor.profile.full_name or enrollment.session.asesor.username }}</a></p>
+        <p style="font-size: 0.9rem;"><strong>Fecha:</strong> {{ enrollment.session.date.strftime('%d/%m/%Y') }}</p>
+        <p style="font-size: 0.9rem;"><strong>Horario:</strong> {{ enrollment.session.start_time.strftime('%H:%M') }} - {{ enrollment.session.end_time.strftime('%H:%M') }}</p>
+        
+        <div class="mt-2 text-center">
+            <a href="{{ url_for('estudiante.review_session', session_id=enrollment.session.id) }}" class="btn glass" style="width: 100%; color: var(--warning-color); border: 1px solid var(--warning-color);">Calificar Asesoría</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-center mt-4 glass card">No estás inscrito en ninguna asesoría actualmente.</p>
+{% endif %}
+{% endblock %}
