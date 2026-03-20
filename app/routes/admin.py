@@ -58,3 +58,38 @@ def delete_user(user_id):
     db.session.commit()
     flash('Usuario eliminado exitosamente.', 'success')
     return redirect(url_for('admin.dashboard'))
+
+from app.models import RoleRequest
+
+@admin.route('/role_requests')
+def role_requests():
+    requests = RoleRequest.query.filter_by(status='Pendiente').all()
+    return render_template('admin/role_requests.html', title='Solicitudes de Rol de Asesor', requests=requests)
+
+@admin.route('/approve_request/<int:req_id>', methods=['POST'])
+def approve_request(req_id):
+    rolereq = RoleRequest.query.get_or_404(req_id)
+    if rolereq.status != 'Pendiente':
+        flash('Esta solicitud ya fue procesada.', 'warning')
+        return redirect(url_for('admin.role_requests'))
+        
+    rolereq.status = 'Aprobado'
+    rolereq.user_rel.role = 'Asesor'
+    db.session.commit()
+    
+    flash(f'Solicitud de {rolereq.user_rel.username} aprobada. Ahora es Asesor.', 'success')
+    return redirect(url_for('admin.role_requests'))
+
+@admin.route('/reject_request/<int:req_id>', methods=['POST'])
+def reject_request(req_id):
+    rolereq = RoleRequest.query.get_or_404(req_id)
+    if rolereq.status != 'Pendiente':
+        flash('Esta solicitud ya fue procesada.', 'warning')
+        return redirect(url_for('admin.role_requests'))
+        
+    rolereq.status = 'Rechazado'
+    db.session.commit()
+    
+    flash(f'Solicitud de {rolereq.user_rel.username} rechazada.', 'info')
+    return redirect(url_for('admin.role_requests'))
+

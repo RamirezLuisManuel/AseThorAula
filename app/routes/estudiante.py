@@ -28,7 +28,24 @@ def profile():
         form.bio.data = current_user.profile.bio
         form.strengths.data = current_user.profile.strengths
         form.focus_areas.data = current_user.profile.focus_areas
-    return render_template('estudiante/profile.html', title='Mi Perfil', form=form)
+        
+    from app.models import RoleRequest
+    pending_request = RoleRequest.query.filter_by(user_id=current_user.id, status='Pendiente').first()
+    return render_template('estudiante/profile.html', title='Mi Perfil', form=form, pending_request=pending_request)
+
+@estudiante.route('/request_asesor', methods=['POST'])
+def request_asesor():
+    from app.models import RoleRequest
+    existing_request = RoleRequest.query.filter_by(user_id=current_user.id, status='Pendiente').first()
+    if existing_request:
+        flash('Ya tienes una solicitud pendiente.', 'warning')
+        return redirect(url_for('estudiante.profile'))
+        
+    new_request = RoleRequest(user_id=current_user.id)
+    db.session.add(new_request)
+    db.session.commit()
+    flash('Tu solicitud para ser Asesor ha sido enviada y está pendiente de aprobación.', 'success')
+    return redirect(url_for('estudiante.profile'))
 
 from app.models import TutoringSession, Enrollment, User, Profile
 from sqlalchemy import or_

@@ -68,3 +68,12 @@ class Review(db.Model):
     rating = db.Column(db.Integer, nullable=False) # 1 to 5
     comment = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class RoleRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.String(20), default='Pendiente') # Pendiente, Aprobado, Rechazado
+    reason = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    user_rel = db.relationship('User', backref=db.backref('role_requests', lazy=True))

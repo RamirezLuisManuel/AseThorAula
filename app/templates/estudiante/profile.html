@@ -12,5 +12,20 @@
             {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
         </div>
     </form>
+    
+    <hr class="mt-4 mb-3">
+    <div class="text-center">
+        {% if pending_request %}
+            <div class="alert alert-info">
+                Tienes una solicitud pendiente para convertirte en Asesor. Un administrador revisará tu petición pronto.
+            </div>
+        {% else %}
+            <h5>¿Quieres convertirte en Asesor?</h5>
+            <p class="text-muted small">Al ser asesor podrás impartir tus propias asesorías.</p>
+            <form action="{{ url_for('estudiante.request_asesor') }}" method="POST">
+                <button type="submit" class="btn btn-secondary">Solicitar rol de Asesor</button>
+            </form>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
