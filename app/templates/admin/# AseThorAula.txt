@@ -1,0 +1,10 @@
+# AseThorAula
+
+[AseThorAula](http://127.0.0.1:5000/home)
+[Iniciar Sesión](http://127.0.0.1:5000/login)
+[Registrarse](http://127.0.0.1:5000/register)
+
+# AseThorAula
+Encuentra asesorías académicas impartidas por estudiantes para estudiantes. Mejora tus habilidades o comparte tu conocimiento.
+[Unirse como Estudiante](http://127.0.0.1:5000/register)
+[Iniciar Sesión](http://127.0.0.1:5000/login)

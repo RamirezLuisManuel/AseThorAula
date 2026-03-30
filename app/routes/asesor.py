@@ -42,6 +42,17 @@ def sessions():
 def new_session():
     form = TutoringSessionForm()
     if form.validate_on_submit():
+        overlapping_session = TutoringSession.query.filter(
+            TutoringSession.asesor_id == current_user.id,
+            TutoringSession.date == form.date.data,
+            TutoringSession.start_time < form.end_time.data,
+            TutoringSession.end_time > form.start_time.data
+        ).first()
+        
+        if overlapping_session:
+            flash(f'Ya tienes una asesoría programada en ese horario ({overlapping_session.start_time.strftime("%H:%M")} - {overlapping_session.end_time.strftime("%H:%M")}).', 'danger')
+            return render_template('asesor/session_form.html', title='Nueva Asesoría', form=form, legend='Nueva Asesoría')
+
         capacity = 1 if form.session_type.data == 'Individual' else form.capacity.data
         session = TutoringSession(
             asesor_id=current_user.id,
@@ -68,6 +79,18 @@ def edit_session(session_id):
     
     form = TutoringSessionForm()
     if form.validate_on_submit():
+        overlapping_session = TutoringSession.query.filter(
+            TutoringSession.asesor_id == current_user.id,
+            TutoringSession.id != session_id,
+            TutoringSession.date == form.date.data,
+            TutoringSession.start_time < form.end_time.data,
+            TutoringSession.end_time > form.start_time.data
+        ).first()
+        
+        if overlapping_session:
+            flash(f'Ya tienes otra asesoría programada en ese horario ({overlapping_session.start_time.strftime("%H:%M")} - {overlapping_session.end_time.strftime("%H:%M")}).', 'danger')
+            return render_template('asesor/session_form.html', title='Editar Asesoría', form=form, legend='Editar Asesoría')
+
         session.topic = form.topic.data
         session.description = form.description.data
         session.date = form.date.data
