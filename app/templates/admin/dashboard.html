@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="d-flex justify-between align-center mb-2">
-    <h2>Panel de Administración</h2>
+    <h2><i class="bi bi-shield-lock"></i> Panel de Administración</h2>
     <div>
-        <a href="{{ url_for('admin.role_requests') }}" class="btn btn-secondary" style="margin-right: 10px;">Ver Solicitudes de Asesor</a>
-        <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary">Crear Nuevo Usuario (Admin/Asesor)</a>
+        <a href="{{ url_for('admin.role_requests') }}" class="btn btn-secondary" style="margin-right: 10px;">
+            <i class="bi bi-envelope-paper"></i> Ver Solicitudes
+        </a>
+        <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary">
+            <i class="bi bi-person-plus-fill"></i> Crear Nuevo Usuario
+        </a>
     </div>
 </div>
 
@@ -12,10 +16,10 @@
     <table style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead>
             <tr style="border-bottom: 1px solid var(--surface-border);">
-                <th style="padding: 1rem;">ID</th>
-                <th style="padding: 1rem;">Usuario</th>
-                <th style="padding: 1rem;">Rol</th>
-                <th style="padding: 1rem;">Acciones</th>
+                <th style="padding: 1rem;"><i class="bi bi-hash"></i> ID</th>
+                <th style="padding: 1rem;"><i class="bi bi-person"></i> Usuario</th>
+                <th style="padding: 1rem;"><i class="bi bi-tag"></i> Rol</th>
+                <th style="padding: 1rem;"><i class="bi bi-gear"></i> Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +32,9 @@
                     {% if user.id != current_user.id and user.role != 'Super-Admin' %}
                         {% if current_user.role == 'Super-Admin' or (current_user.role == 'Admin' and user.role not in ['Super-Admin', 'Admin']) %}
                             <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="return confirm('¿Estás seguro de eliminar a este usuario?');">Eliminar</button>
+                                <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="return confirm('¿Estás seguro de eliminar a este usuario?');">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
                             </form>
                         {% endif %}
                     {% endif %}

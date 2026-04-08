@@ -1,19 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="d-flex justify-between align-center mb-2">
-    <h2>Solicitudes de Asesor</h2>
-    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Volver al Panel</a>
+    <h2><i class="bi bi-envelope-paper"></i> Solicitudes de Asesor</h2>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver al Panel
+    </a>
 </div>
 
 <div class="glass card" style="overflow-x: auto;">
     <table style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead>
             <tr style="border-bottom: 1px solid var(--surface-border);">
-                <th style="padding: 1rem;">ID Solicitud</th>
-                <th style="padding: 1rem;">Usuario</th>
-                <th style="padding: 1rem;">Fecha</th>
-                <th style="padding: 1rem;">Estado</th>
-                <th style="padding: 1rem;">Acciones</th>
+                <th style="padding: 1rem;"><i class="bi bi-hash"></i> ID</th>
+                <th style="padding: 1rem;"><i class="bi bi-person"></i> Usuario</th>
+                <th style="padding: 1rem;"><i class="bi bi-calendar"></i> Fecha</th>
+                <th style="padding: 1rem;"><i class="bi bi-activity"></i> Estado</th>
+                <th style="padding: 1rem;"><i class="bi bi-gear"></i> Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -25,16 +27,22 @@
                 <td style="padding: 1rem;"><span class="badge" style="background: var(--warning-color); color: #000;">{{ req.status }}</span></td>
                 <td style="padding: 1rem;">
                     <form action="{{ url_for('admin.approve_request', req_id=req.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Aprobar</button>
+                        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                            <i class="bi bi-check-lg"></i> Aprobar
+                        </button>
                     </form>
                     <form action="{{ url_for('admin.reject_request', req_id=req.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="return confirm('¿Estás seguro de rechazar esta solicitud?');">Rechazar</button>
+                        <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="return confirm('¿Estás seguro de rechazar esta solicitud?');">
+                            <i class="bi bi-x-lg"></i> Rechazar
+                        </button>
                     </form>
                 </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="5" style="padding: 1rem; text-align: center;">No hay solicitudes pendientes.</td>
+                <td colspan="5" style="padding: 1rem; text-align: center;">
+                    <i class="bi bi-info-circle"></i> No hay solicitudes pendientes.
+                </td>
             </tr>
             {% endfor %}
         </tbody>

@@ -7,20 +7,30 @@
     
     {% if not current_user.is_authenticated %}
         <div class="d-flex gap-1" style="justify-content: center;">
-            <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">Unirse como Estudiante</a>
-            <a href="{{ url_for('auth.login') }}" class="btn glass" style="font-size: 1.1rem; padding: 1rem 2rem; color: var(--text-primary);">Iniciar Sesión</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                <i class="bi bi-person-plus-fill"></i> Unirse como Estudiante
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="btn glass" style="font-size: 1.1rem; padding: 1rem 2rem; color: var(--text-primary);">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </a>
         </div>
     {% else %}
         <div class="glass card" style="max-width: 600px; margin: 0 auto;">
-            <h2>Bienvenido, {{ current_user.profile.full_name or current_user.username }}</h2>
+            <h2><i class="bi bi-hand-thumbs-up"></i> Bienvenido, {{ current_user.profile.full_name or current_user.username }}</h2>
             <p>Has iniciado sesión como <strong>{{ current_user.role }}</strong>.</p>
             <div class="mt-2 text-center">
                 {% if current_user.role == 'Super-Admin' or current_user.role == 'Admin' %}
-                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">Ir al Panel de Administración</a>
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">
+                        <i class="bi bi-speedometer2"></i> Ir al Panel de Administración
+                    </a>
                 {% elif current_user.role == 'Asesor' %}
-                    <a href="{{ url_for('asesor.sessions') }}" class="btn btn-primary">Gestionar mis Asesorías</a>
+                    <a href="{{ url_for('asesor.sessions') }}" class="btn btn-primary">
+                        <i class="bi bi-calendar-event"></i> Gestionar mis Asesorías
+                    </a>
                 {% elif current_user.role == 'Estudiante' %}
-                    <a href="{{ url_for('estudiante.search') }}" class="btn btn-primary">Buscar Asesorías Disponibles</a>
+                    <a href="{{ url_for('estudiante.search') }}" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Buscar Asesorías Disponibles
+                    </a>
                 {% endif %}
             </div>
         </div>

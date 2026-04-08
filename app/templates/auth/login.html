@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="auth-container glass card">
-    <h2 class="text-center mb-2">Iniciar Sesión</h2>
+    <h2 class="text-center mb-2"><i class="bi bi-lock-fill"></i> Iniciar Sesión</h2>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <div class="form-group">
-            {{ form.username.label }}
+            <i class="bi bi-person-fill"></i> {{ form.username.label }}
             {% if form.username.errors %}
                 {{ form.username(class="form-control", style="border-color: var(--danger-color);") }}
                 <div style="color: var(--danger-color); font-size: 0.875rem; margin-top: 0.25rem;">
@@ -14,11 +14,11 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {{ form.username(class="form-control") }}
+                {{ form.username(class="form-control", placeholder="Usuario") }}
             {% endif %}
         </div>
         <div class="form-group">
-            {{ form.password.label }}
+            <i class="bi bi-key-fill"></i> {{ form.password.label }}
             {% if form.password.errors %}
                 {{ form.password(class="form-control", style="border-color: var(--danger-color);") }}
                 <div style="color: var(--danger-color); font-size: 0.875rem; margin-top: 0.25rem;">
@@ -27,14 +27,16 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {{ form.password(class="form-control") }}
+                {{ form.password(class="form-control", placeholder="Contraseña") }}
             {% endif %}
         </div>
         <div class="form-group d-flex align-center gap-1">
             {{ form.remember() }} {{ form.remember.label(style="margin-bottom:0;") }}
         </div>
         <div class="form-group mt-2">
-            {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i class="bi bi-box-arrow-in-right"></i> {{ form.submit.label.text }}
+            </button>
         </div>
     </form>
     <div class="text-center mt-2" style="font-size: 0.9rem;">

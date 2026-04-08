@@ -6,7 +6,7 @@
         <!-- Search Widget -->
         <div class="widget">
             <div class="widget-header">
-                🔍 Buscar Asesores Disponibles
+                <i class="bi bi-search"></i> Buscar Asesores Disponibles
             </div>
             <div class="widget-body">
                 <form method="GET" action="{{ url_for('estudiante.search') }}" class="d-flex gap-1 align-center" style="flex-wrap: wrap;">
@@ -17,7 +17,9 @@
                         <option value="Grupal" {% if request.args.get('session_type') == 'Grupal' %}selected{% endif %}>Grupal</option>
                     </select>
                     <input type="date" name="date" class="form-control" style="flex: 1; min-width: 150px;" value="{{ request.args.get('date', '') }}">
-                    <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 120px;">Filtrar</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 120px;">
+                        <i class="bi bi-funnel"></i> Filtrar
+                    </button>
                 </form>
             </div>
         </div>
@@ -25,7 +27,7 @@
         <!-- Recommendations Widget -->
         <div class="widget mt-4">
             <div class="widget-header">
-                👨‍🏫 Asesores Recomendados
+                <span><i class="bi bi-person-workspace"></i> Asesores Recomendados</span>
                 {% if sessions %}
                 <span style="font-size: 0.8rem; font-weight: 400; color: #ccc;">{{ sessions|length }} disponibles</span>
                 {% endif %}
@@ -37,23 +39,31 @@
                     <div class="glass card">
                         <div class="d-flex justify-between align-center mb-2">
                             <h3 style="margin: 0; color: var(--primary-color);">{{ session.topic }}</h3>
-                            <span class="badge">{{ session.session_type }}</span>
+                            <span class="badge">
+                                <i class="bi {% if session.session_type == 'Individual' %}bi-person{% else %}bi-people{% endif %}"></i> {{ session.session_type }}
+                            </span>
                         </div>
-                        <p style="font-size: 0.9rem;"><strong>Asesor:</strong> <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" style="color: var(--primary-color);">{{ session.asesor.profile.full_name or session.asesor.username }}</a></p>
-                        <p style="font-size: 0.9rem;"><strong>Fecha:</strong> {{ session.date.strftime('%d/%m/%Y') }}</p>
-                        <p style="font-size: 0.9rem;"><strong>Horario:</strong> {{ session.start_time.strftime('%H:%M') }} - {{ session.end_time.strftime('%H:%M') }}</p>
-                        <p style="font-size: 0.9rem;"><strong>Cupo:</strong> {{ session.enrollments|length }} / {{ session.capacity }}</p>
+                        <p style="font-size: 0.9rem;"><strong><i class="bi bi-person-badge"></i> Asesor:</strong> <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" style="color: var(--primary-color);">{{ session.asesor.profile.full_name or session.asesor.username }}</a></p>
+                        <p style="font-size: 0.9rem;"><strong><i class="bi bi-calendar3"></i> Fecha:</strong> {{ session.date.strftime('%d/%m/%Y') }}</p>
+                        <p style="font-size: 0.9rem;"><strong><i class="bi bi-clock"></i> Horario:</strong> {{ session.start_time.strftime('%H:%M') }} - {{ session.end_time.strftime('%H:%M') }}</p>
+                        <p style="font-size: 0.9rem;"><strong><i class="bi bi-people-fill"></i> Cupo:</strong> {{ session.enrollments|length }} / {{ session.capacity }}</p>
                         <p style="margin-top: 1rem; font-size: 0.95rem;">{{ session.description[:100] }}...</p>
                         
                         <div class="mt-2 text-center">
                             {% if session.enrollments|length >= session.capacity %}
-                                <button class="btn glass" style="width: 100%; color: var(--text-secondary); cursor: not-allowed;" disabled>Asesoría Llena</button>
+                                <button class="btn glass" style="width: 100%; color: var(--text-secondary); cursor: not-allowed;" disabled>
+                                    <i class="bi bi-x-circle"></i> Asesoría Llena
+                                </button>
                             {% else %}
                                 <form action="{{ url_for('estudiante.enroll', session_id=session.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-primary" style="background-color: var(--text-primary); color: var(--bg-color); width: 100%;">SOLICITAR ASESORÍA</button>
+                                    <button type="submit" class="btn btn-primary" style="background-color: var(--text-primary); color: var(--bg-color); width: 100%;">
+                                        <i class="bi bi-check-circle"></i> SOLICITAR ASESORÍA
+                                    </button>
                                 </form>
                             {% endif %}
-                            <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" class="btn mt-2" style="width: 100%; background: none; border: 1px solid var(--surface-border); border-radius: 8px;">VER PERFIL</a>
+                            <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" class="btn mt-2" style="width: 100%; background: none; border: 1px solid var(--surface-border); border-radius: 8px; color: var(--text-primary);">
+                                <i class="bi bi-eye"></i> VER PERFIL
+                            </a>
                         </div>
                     </div>
                     {% endfor %}
@@ -69,7 +79,7 @@
     <div>
         <div class="widget">
             <div class="widget-header">
-                👤 Mi Perfil
+                <i class="bi bi-person"></i> Mi Perfil
             </div>
             <div class="widget-body text-center">
                 <div style="width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-color); color: #F5EFD9; font-size: 3rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; font-weight: bold;">
