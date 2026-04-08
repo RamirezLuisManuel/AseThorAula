@@ -39,6 +39,13 @@
                     <a href="{{ url_for('asesor.new_session') }}" class="sidebar-link">
                         <i class="bi bi-plus-circle"></i> Nueva Asesoría
                     </a>
+                    <div class="sidebar-section">Como Estudiante</div>
+                    <a href="{{ url_for('estudiante.search') }}" class="sidebar-link">
+                        <i class="bi bi-search"></i> Buscar Asesores
+                    </a>
+                    <a href="{{ url_for('estudiante.my_sessions') }}" class="sidebar-link">
+                        <i class="bi bi-journal-text"></i> Mis Asistencias
+                    </a>
                     <div class="sidebar-section">Cuenta</div>
                     <a href="{{ url_for('asesor.profile') }}" class="sidebar-link">
                         <i class="bi bi-person-circle"></i> Mi Perfil

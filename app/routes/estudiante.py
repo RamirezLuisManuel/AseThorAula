@@ -8,8 +8,8 @@ estudiante = Blueprint('estudiante', __name__, url_prefix='/estudiante')
 @estudiante.before_request
 @login_required
 def check_estudiante():
-    if current_user.role != 'Estudiante':
-        flash('Acceso denegado. Esta sección es solo para estudiantes.', 'danger')
+    if current_user.role not in ['Estudiante', 'Asesor']:
+        flash('Acceso denegado. Esta sección es solo para estudiantes y asesores.', 'danger')
         return redirect(url_for('main.home'))
 
 @estudiante.route('/profile', methods=['GET', 'POST'])
@@ -74,6 +74,11 @@ def search():
 @estudiante.route('/enroll/<int:session_id>', methods=['POST'])
 def enroll(session_id):
     session = TutoringSession.query.get_or_404(session_id)
+    
+    # Check if Asesor tries to enroll in their own session
+    if session.asesor_id == current_user.id:
+        flash('No puedes inscribirte a tu propia asesoría.', 'warning')
+        return redirect(url_for('estudiante.search'))
     
     # Check if already enrolled
     existing_enrollment = Enrollment.query.filter_by(student_id=current_user.id, session_id=session_id).first()
