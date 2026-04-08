@@ -17,5 +17,4 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
     username = StringField('Usuario', validators=[DataRequired()])
     password = PasswordField('Contraseña', validators=[DataRequired()])
-    remember = BooleanField('Recuérdame')
     submit = SubmitField('Iniciar Sesión')

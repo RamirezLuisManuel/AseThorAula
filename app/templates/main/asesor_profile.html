@@ -3,45 +3,46 @@
 <div class="profile-grid">
     <!-- Sidebar del Asesor -->
     <div class="profile-sidebar">
-        <div class="glass card profile-sidebar-card p-3">
-            <div class="avatar-large mb-2" style="width: 100px; height: 100px; font-size: 2.5rem;">{{ asesor.username[0]|upper }}</div>
-            <h3 class="mb-1" style="font-size: 1.4rem;">{{ asesor.profile.full_name or asesor.username }}</h3>
-            <span class="badge mb-3">Asesor Académico</span>
+        <div class="glass card profile-sidebar-card p-4">
+            <div class="avatar-large mb-4">{{ asesor.username[0]|upper }}</div>
+            <h2 class="advisor-name mb-2">{{ asesor.profile.full_name or asesor.username }}</h2>
+            <span class="role-badge mb-4"><i class="bi bi-patch-check-fill me-1"></i>Asesor Académico</span>
             
-            <div class="profile-stat-box mt-2 mb-3" style="padding-top: 1rem; gap: 0.5rem;">
-                <div class="stat-item">
-                    <span class="stat-value" style="font-size: 1.1rem;">{{ asesor.profile.rating_avg or 0 }}</span>
-                    <span class="stat-label">Rating</span>
+            <div class="profile-stat-box-modern mb-4">
+                <div class="stat-item-modern">
+                    <span class="stat-value-modern">{{ asesor.profile.rating_avg or 0 }}</span>
+                    <span class="stat-label-modern">Rating</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value" style="font-size: 1.1rem;">{{ reviews|length }}</span>
-                    <span class="stat-label">Reseñas</span>
+                <div class="stat-divider"></div>
+                <div class="stat-item-modern">
+                    <span class="stat-value-modern">{{ reviews|length }}</span>
+                    <span class="stat-label-modern">Reseñas</span>
                 </div>
             </div>
 
-            <div class="star-rating mb-3" style="font-size: 1.2rem;">
+            <div class="star-rating-modern mb-4">
                 {% set rating = asesor.profile.rating_avg or 0 %}
                 {% for i in range(5) %}
-                    <i class="bi bi-star-fill {% if i < rating %}filled{% endif %}" style="color: {% if i < rating %}var(--warning-color){% else %}#e2e8f0{% endif %};"></i>
+                    <i class="bi bi-star-fill {% if i < rating %}filled{% endif %}"></i>
                 {% endfor %}
             </div>
 
-            <div class="sidebar-details text-start mt-3" style="border-top: 1px solid var(--surface-border); padding-top: 1rem;">
-                <div class="mb-3">
-                    <h6 class="mb-1" style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">Temas</h6>
-                    <div class="d-flex flex-wrap gap-1">
+            <div class="sidebar-info-sections">
+                <div class="info-section mb-4">
+                    <h6 class="info-title mb-2">Temas de Especialidad</h6>
+                    <div class="tags-container">
                         {% if asesor.profile.strengths %}
                             {% for strength in asesor.profile.strengths.split(',') %}
-                                <span class="badge bg-light" style="font-size: 0.7rem; background: rgba(30, 90, 168, 0.05); color: var(--primary-color);">{{ strength.strip() }}</span>
+                                <span class="tag-item">{{ strength.strip() }}</span>
                             {% endfor %}
                         {% else %}
                             <span class="text-muted small">No especificado</span>
                         {% endif %}
                     </div>
                 </div>
-                <div>
-                    <h6 class="mb-1" style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">Enfoque</h6>
-                    <p class="small mb-0">{{ asesor.profile.focus_areas or 'No especificado' }}</p>
+                <div class="info-section">
+                    <h6 class="info-title mb-2">Enfoque Pedagógico</h6>
+                    <p class="focus-text">{{ asesor.profile.focus_areas or 'No especificado' }}</p>
                 </div>
             </div>
         </div>
@@ -49,76 +50,97 @@
 
     <!-- Contenido Principal -->
     <div class="profile-main-content">
-        <!-- Biografía Compacta -->
-        <div class="glass card p-3 mb-3">
-            <h4 class="form-section-title mb-2" style="font-size: 1.1rem;">
-                <i class="bi bi-person-video2"></i> Biografía
+        <!-- Biografía -->
+        <div class="glass card p-4 mb-4 bio-card">
+            <h4 class="section-header mb-3">
+                <i class="bi bi-person-lines-fill"></i> Biografía Profesional
             </h4>
-            <p class="mb-0" style="font-size: 0.95rem; line-height: 1.5;">{{ asesor.profile.bio or 'Sin biografía disponible.' }}</p>
+            <p class="bio-text">{{ asesor.profile.bio or 'Sin biografía disponible actualmente.' }}</p>
         </div>
 
-        <div class="content-dual-grid">
+        <div class="content-dual-grid-modern">
             <!-- Asesorías Programadas -->
             <div class="sessions-column">
-                <h4 class="form-section-title mb-3" style="font-size: 1.1rem;">
-                    <i class="bi bi-calendar-check"></i> Próximas Asesorías
+                <h4 class="section-header mb-4">
+                    <i class="bi bi-calendar-event"></i> Próximas Asesorías
                 </h4>
                 
                 {% if sessions %}
-                <div class="d-flex flex-column gap-2">
+                <div class="sessions-list">
                     {% for session in sessions %}
-                    <div class="glass card p-3 mb-0 compact-session-card">
-                        <div class="d-flex justify-between align-center mb-1">
-                            <h5 class="topic-title">{{ session.topic }}</h5>
-                            <span class="type-badge">{{ session.session_type }}</span>
+                    <div class="glass card p-4 mb-3 session-card-modern">
+                        <div class="session-card-header mb-3">
+                            <h5 class="session-topic">{{ session.topic }}</h5>
+                            <span class="session-type-pill">{{ session.session_type }}</span>
                         </div>
                         
-                        <div class="d-flex gap-3 small text-secondary mb-2">
-                            <span><i class="bi bi-calendar3"></i> {{ session.date.strftime('%d/%b') }}</span>
-                            <span><i class="bi bi-clock"></i> {{ session.start_time.strftime('%H:%M') }}</span>
-                            <span><i class="bi bi-people"></i> {{ session.enrollments|length }}/{{ session.capacity }}</span>
+                        <div class="session-details-row mb-4">
+                            <div class="detail-pill">
+                                <i class="bi bi-calendar3"></i>
+                                <span>{{ session.date.strftime('%d %b') }}</span>
+                            </div>
+                            <div class="detail-pill">
+                                <i class="bi bi-clock"></i>
+                                <span>{{ session.start_time.strftime('%H:%M') }}</span>
+                            </div>
+                            <div class="detail-pill">
+                                <i class="bi bi-people"></i>
+                                <span>{{ session.enrollments|length }}/{{ session.capacity }}</span>
+                            </div>
                         </div>
 
                         {% if current_user.is_authenticated and current_user.role == 'Estudiante' %}
                             {% if session.enrollments|length < session.capacity %}
                             <form action="{{ url_for('estudiante.enroll', session_id=session.id) }}" method="POST">
-                                <button type="submit" class="btn btn-primary btn-sm w-100 py-1">Inscribirse</button>
+                                <button type="submit" class="btn btn-primary-modern w-100">
+                                    <i class="bi bi-plus-circle me-1"></i> Inscribirse a la Sesión
+                                </button>
                             </form>
                             {% else %}
-                                <button class="btn btn-sm w-100 py-1" disabled style="background: #f1f5f9; color: #94a3b8;">Lleno</button>
+                                <button class="btn btn-disabled w-100" disabled>
+                                    <i class="bi bi-slash-circle me-1"></i> Cupo Agotado
+                                </button>
                             {% endif %}
                         {% endif %}
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="glass card p-3 text-center text-muted">
-                    <p class="small mb-0">Sin asesorías programadas.</p>
+                <div class="empty-state card p-5">
+                    <i class="bi bi-calendar-x mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
+                    <p class="mb-0">No hay asesorías programadas en este momento.</p>
                 </div>
                 {% endif %}
             </div>
 
             <!-- Reseñas -->
             <div class="reviews-column">
-                <h4 class="form-section-title mb-3" style="font-size: 1.1rem;">
-                    <i class="bi bi-chat-left-quote"></i> Reseñas
+                <h4 class="section-header mb-4">
+                    <i class="bi bi-chat-heart"></i> Experiencias
                 </h4>
                 
                 {% if reviews %}
-                <div class="reviews-scroll-area">
+                <div class="reviews-container-modern">
                     {% for review in reviews %}
-                    <div class="review-item mb-2 pb-2" style="border-bottom: 1px solid var(--surface-border);">
-                        <div class="d-flex justify-between align-center mb-1">
-                            <span class="small fw-bold">{{ review.student_reviewer.username }}</span>
-                            <span class="small" style="color: var(--warning-color);">★ {{ review.rating }}</span>
+                    <div class="review-card-modern mb-3">
+                        <div class="review-header mb-2">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">{{ review.student_reviewer.username[0]|upper }}</div>
+                                <span class="reviewer-name">{{ review.student_reviewer.username }}</span>
+                            </div>
+                            <div class="review-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span>{{ review.rating }}</span>
+                            </div>
                         </div>
-                        <p class="small text-muted italic mb-0">"{{ review.comment or 'Sin comentario'|truncate(60) }}"</p>
+                        <p class="review-comment">"{{ review.comment or 'Excelente asesoría.'|truncate(120) }}"</p>
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="glass card p-3 text-center text-muted">
-                    <p class="small mb-0">Sin reseñas aún.</p>
+                <div class="empty-state card p-5">
+                    <i class="bi bi-star mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
+                    <p class="mb-0">Aún no cuenta con reseñas de alumnos.</p>
                 </div>
                 {% endif %}
             </div>
@@ -127,53 +149,305 @@
 </div>
 
 <style>
-    .w-100 { width: 100%; }
-    .bg-light { background: #f8fafc; }
-    .content-dual-grid {
+    /* Layout Spacing */
+    .profile-grid {
         display: grid;
-        grid-template-columns: 1.5fr 1fr;
-        gap: 1.5rem;
+        grid-template-columns: 350px 1fr;
+        gap: 2.5rem;
+        padding-top: 1rem;
     }
-    .topic-title {
-        margin: 0; 
-        color: var(--primary-color); 
-        font-size: 1rem; 
+
+    /* Sidebar Refinements */
+    .profile-sidebar-card {
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 2rem;
+    }
+
+    .advisor-name {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.5px;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: rgba(30, 90, 168, 0.08);
+        color: var(--primary-color);
+        border-radius: 50px;
+        font-size: 0.85rem;
         font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
-    .type-badge {
-        font-size: 0.65rem;
-        padding: 0.1rem 0.4rem;
+
+    /* Stats Box Modern */
+    .profile-stat-box-modern {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 1.25rem;
+    }
+
+    .stat-item-modern {
+        text-align: center;
+        flex: 1;
+    }
+
+    .stat-divider {
+        width: 1px;
+        height: 30px;
+        background: #e2e8f0;
+    }
+
+    .stat-value-modern {
+        display: block;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .stat-label-modern {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    /* Star Rating */
+    .star-rating-modern {
+        font-size: 1.4rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.25rem;
+    }
+
+    .star-rating-modern .bi-star-fill {
+        color: #e2e8f0;
+    }
+
+    .star-rating-modern .bi-star-fill.filled {
+        color: var(--warning-color);
+        filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.3));
+    }
+
+    /* Info Sections */
+    .info-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        font-weight: 700;
+    }
+
+    .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tag-item {
+        padding: 0.35rem 0.75rem;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .focus-text {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Main Content Headers */
+    .section-header {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        margin-bottom: 2rem !important;
+    }
+
+    .bio-text {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: var(--text-secondary);
+    }
+
+    /* Dual Grid Modern */
+    .content-dual-grid-modern {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+    }
+
+    /* Session Cards */
+    .session-card-modern {
+        border: none;
+        border-radius: 20px;
+    }
+
+    .session-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .session-topic {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin: 0;
+    }
+
+    .session-type-pill {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 0.25rem 0.6rem;
         background: rgba(30, 90, 168, 0.1);
         color: var(--primary-color);
-        border-radius: 4px;
+        border-radius: 6px;
+    }
+
+    .session-details-row {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .detail-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .detail-pill i {
+        color: var(--primary-color);
+    }
+
+    /* Buttons Modern */
+    .btn-primary-modern {
+        background: linear-gradient(135deg, var(--primary-color), #4F46E5);
+        color: white;
+        border: none;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(30, 90, 168, 0.2);
+    }
+
+    .btn-primary-modern:hover {
+        filter: brightness(1.1);
+        color: white;
+    }
+
+    .btn-disabled {
+        background: #f1f5f9;
+        color: #94a3b8;
+        border: none;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
         font-weight: 600;
     }
-    .compact-session-card {
-        padding: 1rem !important;
-        transition: transform 0.2s;
+
+    /* Review Cards */
+    .review-card-modern {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
-    .compact-session-card:hover {
-        transform: scale(1.02);
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-    .reviews-scroll-area {
-        max-height: 400px;
-        overflow-y: auto;
-        padding-right: 0.5rem;
+
+    .reviewer-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
-    .reviews-scroll-area::-webkit-scrollbar {
-        width: 4px;
+
+    .reviewer-avatar {
+        width: 32px;
+        height: 32px;
+        background: #eef2ff;
+        color: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
     }
-    .reviews-scroll-area::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
+
+    .reviewer-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
     }
+
+    .review-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--warning-color);
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .review-comment {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-style: italic;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Responsive */
     @media (max-width: 1200px) {
-        .content-dual-grid {
+        .content-dual-grid-modern {
             grid-template-columns: 1fr;
         }
+    }
+
+    @media (max-width: 992px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+        .profile-sidebar-card {
+            position: static;
+        }
+    }
+
+    .empty-state {
+        text-align: center;
+        color: var(--text-secondary);
+        font-style: italic;
+        border: 1px dashed #e2e8f0;
+        background: rgba(248, 250, 252, 0.5);
     }
 </style>
 {% endblock %}

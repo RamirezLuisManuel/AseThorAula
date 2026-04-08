@@ -3,81 +3,325 @@
 <div class="profile-grid">
     <!-- Barra Lateral de Perfil del Asesor -->
     <div class="profile-sidebar">
-        <div class="glass card profile-sidebar-card">
-            <div class="avatar-large" style="background: linear-gradient(135deg, #10b981, #059669);">
+        <div class="glass card profile-sidebar-card p-4">
+            <div class="avatar-large-asesor mb-4">
                 {{ current_user.username[0]|upper }}
             </div>
-            <h3 class="mb-1">{{ current_user.username }}</h3>
-            <span class="badge mb-3" style="background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2);">
-                <i class="bi bi-patch-check-fill"></i> {{ current_user.role }}
+            <h3 class="advisor-title mb-2">{{ current_user.username }}</h3>
+            <span class="role-badge-asesor mb-4">
+                <i class="bi bi-patch-check-fill me-1"></i> {{ current_user.role }}
             </span>
             
-            <div class="profile-stat-box">
-                <div class="stat-item">
-                    <span class="stat-value">{{ current_user.sessions_given|length }}</span>
-                    <span class="stat-label">Asesorías</span>
+            <div class="stats-container-asesor mb-4">
+                <div class="stat-pill">
+                    <span class="stat-num">{{ current_user.sessions_given|length }}</span>
+                    <span class="stat-txt">Asesorías</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-value">{{ "%.1f"|format(current_user.profile.rating_avg or 0.0) }}</span>
-                    <span class="stat-label">Rating</span>
+                <div class="stat-pill">
+                    <span class="stat-num">{{ "%.1f"|format(current_user.profile.rating_avg or 0.0) }}</span>
+                    <span class="stat-txt">Rating</span>
                 </div>
             </div>
-        </div>
 
-        <div class="glass card p-3 mt-4">
-            <h6 class="mb-3 text-secondary text-uppercase small" style="letter-spacing: 0.1em;">Acciones Rápidas</h6>
-            <a href="{{ url_for('asesor.new_session') }}" class="btn btn-primary btn-sm w-100 mb-2">
-                <i class="bi bi-calendar-plus"></i> Nueva Sesión
-            </a>
-            <a href="{{ url_for('asesor.sessions') }}" class="btn btn-outline-primary btn-sm w-100">
-                <i class="bi bi-list-task"></i> Ver Mis Sesiones
-            </a>
+            <div class="quick-actions-box">
+                <h6 class="actions-header mb-3">Gestión Rápida</h6>
+                <div class="d-flex flex-column gap-2">
+                    <a href="{{ url_for('asesor.new_session') }}" class="btn btn-action-primary">
+                        <i class="bi bi-calendar-plus"></i> Nueva Sesión
+                    </a>
+                    <a href="{{ url_for('asesor.sessions') }}" class="btn btn-action-outline">
+                        <i class="bi bi-person-video3"></i> Mis Sesiones
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Contenido Principal -->
     <div class="profile-main-content">
-        <div class="glass card">
-            <h4 class="form-section-title">
-                <i class="bi bi-briefcase-fill"></i> Perfil Profesional del Asesor
+        <div class="glass card p-5">
+            <h4 class="section-header-asesor mb-4">
+                <i class="bi bi-pencil-square"></i> Configuración del Perfil Profesional
             </h4>
             
-            <form method="POST" action="">
+            <form method="POST" action="" class="modern-form">
                 {{ form.hidden_tag() }}
                 
-                <div class="form-group">
-                    <label><i class="bi bi-person-bounding-box"></i> {{ form.full_name.label.text }}</label>
-                    {{ form.full_name(class="form-control", placeholder="Nombre completo para mostrar a los estudiantes") }}
-                </div>
-
-                <div class="form-group">
-                    <label><i class="bi bi-award"></i> {{ form.bio.label.text }}</label>
-                    {{ form.bio(class="form-control", rows=4, placeholder="Escribe una biografía profesional. Menciona tu experiencia y por qué deberían elegirte como asesor.") }}
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><i class="bi bi-stars"></i> {{ form.strengths.label.text }}</label>
-                        {{ form.strengths(class="form-control", placeholder="Habilidades principales") }}
+                <div class="form-section-modern mb-5">
+                    <h5 class="form-subtitle mb-4">Información General</h5>
+                    <div class="form-group mb-4">
+                        <label class="form-label-modern"><i class="bi bi-person-badge"></i> {{ form.full_name.label.text }}</label>
+                        {{ form.full_name(class="form-control-modern", placeholder="Tu nombre profesional completo") }}
                     </div>
-                    <div class="form-group">
-                        <label><i class="bi bi-laptop"></i> {{ form.focus_areas.label.text }}</label>
-                        {{ form.focus_areas(class="form-control", placeholder="Áreas de enfoque") }}
+    
+                    <div class="form-group mb-4">
+                        <label class="form-label-modern"><i class="bi bi-blockquote-left"></i> {{ form.bio.label.text }}</label>
+                        {{ form.bio(class="form-control-modern", rows=5, placeholder="Resume tu experiencia, metodología y por qué los estudiantes deberían elegirte.") }}
                     </div>
                 </div>
 
-                <div class="text-end mt-4">
-                    {{ form.submit(class="btn btn-primary px-5") }}
+                <div class="form-section-modern mb-5">
+                    <h5 class="form-subtitle mb-4">Especialidad y Enfoque</h5>
+                    <div class="form-row-modern">
+                        <div class="form-group">
+                            <label class="form-label-modern"><i class="bi bi-stars"></i> {{ form.strengths.label.text }}</label>
+                            {{ form.strengths(class="form-control-modern", placeholder="Ej: Python, Cálculo, Historia...") }}
+                            <small class="text-muted mt-1 d-block">Separa por comas (,)</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-modern"><i class="bi bi-bullseye"></i> {{ form.focus_areas.label.text }}</label>
+                            {{ form.focus_areas(class="form-control-modern", placeholder="Ej: Preparación de exámenes, Proyectos...") }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submit-container-asesor">
+                    {{ form.submit(class="btn btn-save-profile") }}
                 </div>
             </form>
         </div>
 
-        <div class="alert alert-info mt-4 d-flex align-items-center gap-3">
-            <div style="font-size: 1.5rem;"><i class="bi bi-lightbulb-fill"></i></div>
-            <div>
-                <strong>Consejo:</strong> Mantener tu biografía y áreas de enfoque actualizadas ayuda a que más estudiantes encuentren tus servicios.
+        <div class="info-tip card p-4 mt-4">
+            <div class="tip-icon"><i class="bi bi-magic"></i></div>
+            <div class="tip-content">
+                <h6>Impulsa tu perfil</h6>
+                <p class="mb-0">Un perfil detallado y profesional aumenta tu visibilidad. Asegúrate de incluir palabras clave relevantes en tus áreas de enfoque.</p>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Layout */
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 2.5rem;
+    }
+
+    /* Sidebar Asesor */
+    .avatar-large-asesor {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 auto;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+        border: 4px solid white;
+    }
+
+    .advisor-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-align: center;
+    }
+
+    .role-badge-asesor {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        background: rgba(16, 185, 129, 0.08);
+        color: #059669;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        width: fit-content;
+        margin: 0 auto;
+    }
+
+    .stats-container-asesor {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 16px;
+    }
+
+    .stat-pill {
+        text-align: center;
+    }
+
+    .stat-num {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #059669;
+    }
+
+    .stat-txt {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    .actions-header {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        font-weight: 700;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+    }
+
+    .btn-action-primary {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.7rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .btn-action-primary:hover {
+        background: var(--primary-hover);
+        color: white;
+    }
+
+    .btn-action-outline {
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: var(--text-primary);
+        padding: 0.7rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .btn-action-outline:hover {
+        background: #f8fafc;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    /* Main Content Section */
+    .section-header-asesor {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .form-subtitle {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+    }
+
+    .form-label-modern {
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control-modern {
+        width: 100%;
+        padding: 1rem;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        background: #fcfcfd;
+        font-family: inherit;
+    }
+
+    .form-control-modern:focus {
+        border-color: var(--primary-color);
+        background: white;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(30, 90, 168, 0.1);
+    }
+
+    .form-row-modern {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .btn-save-profile {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        cursor: pointer;
+    }
+
+    .btn-save-profile:hover {
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        filter: brightness(1.1);
+    }
+
+    /* Info Tip */
+    .info-tip {
+        display: flex;
+        gap: 1.5rem;
+        background: linear-gradient(to right, #ffffff, #f0fdf4);
+        border: 1px solid #dcfce7;
+        align-items: center;
+    }
+
+    .tip-icon {
+        width: 50px;
+        height: 50px;
+        background: #dcfce7;
+        color: #166534;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .tip-content h6 {
+        font-weight: 700;
+        color: #166534;
+        margin-bottom: 0.25rem;
+    }
+
+    .tip-content p {
+        font-size: 0.9rem;
+        color: #15803d;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+        .form-row-modern {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 {% endblock %}
