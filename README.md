@@ -1,1 +1,3 @@
 # AseThorAula
+
+python run.py
