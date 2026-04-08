@@ -1,113 +1,494 @@
 {% extends 'base.html' %}
 {% set title = 'Panel de Estudiante' %}
 {% block content %}
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;" class="dashboard-grid">
-    <div>
-        <!-- Search Widget -->
-        <div class="widget">
+
+<div class="dashboard-container">
+
+    <!-- 2. Búsqueda de Asesorías -->
+    <div class="search-section-wrapper">
+        <div class="widget search-widget glass">
             <div class="widget-header">
-                <i class="bi bi-search"></i> Buscar Asesores Disponibles
+                <i class="bi bi-search"></i> Buscar Asesorías
             </div>
             <div class="widget-body">
-                <form method="GET" action="{{ url_for('estudiante.search') }}" class="d-flex gap-1 align-center" style="flex-wrap: wrap;">
-                    <input type="text" name="topic" placeholder="Buscar por tema..." class="form-control" style="flex: 2; min-width: 200px;" value="{{ request.args.get('topic', '') }}">
-                    <select name="session_type" class="form-select" style="flex: 1; min-width: 150px;">
-                        <option value="">Cualquier tipo</option>
-                        <option value="Individual" {% if request.args.get('session_type') == 'Individual' %}selected{% endif %}>Individual</option>
-                        <option value="Grupal" {% if request.args.get('session_type') == 'Grupal' %}selected{% endif %}>Grupal</option>
-                    </select>
-                    <input type="date" name="date" class="form-control" style="flex: 1; min-width: 150px;" value="{{ request.args.get('date', '') }}">
-                    <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 120px;">
-                        <i class="bi bi-funnel"></i> Filtrar
-                    </button>
+                <form method="GET" action="{{ url_for('estudiante.search') }}" class="search-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <i class="bi bi-book"></i>
+                            <input type="text" name="topic" placeholder="¿Qué quieres aprender?" class="form-control" value="{{ request.args.get('topic', '') }}">
+                        </div>
+                        <div class="input-group">
+                            <i class="bi bi-person-lines-fill"></i>
+                            <select name="session_type" class="form-select">
+                                <option value="">Cualquier tipo</option>
+                                <option value="Individual" {% if request.args.get('session_type') == 'Individual' %}selected{% endif %}>Individual</option>
+                                <option value="Grupal" {% if request.args.get('session_type') == 'Grupal' %}selected{% endif %}>Grupal</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <i class="bi bi-calendar-event"></i>
+                            <input type="date" name="date" class="form-control" value="{{ request.args.get('date', '') }}">
+                        </div>
+                        <button type="submit" class="btn btn-search">
+                            <i class="bi bi-funnel"></i> FILTRAR
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
+    </div>
 
-        <!-- Recommendations Widget -->
-        <div class="widget mt-4">
-            <div class="widget-header">
-                <span><i class="bi bi-person-workspace"></i> Asesores Recomendados</span>
-                {% if sessions %}
-                <span style="font-size: 0.8rem; font-weight: 400; color: #ccc;">{{ sessions|length }} disponibles</span>
-                {% endif %}
-            </div>
-            <div class="widget-body" style="background-color: var(--bg-color);">
-                {% if sessions %}
-                <div class="grid-cards">
-                    {% for session in sessions %}
-                    <div class="glass card">
-                        <div class="d-flex justify-between align-center mb-2">
-                            <h3 style="margin: 0; color: var(--primary-color);">{{ session.topic }}</h3>
-                            <span class="badge">
-                                <i class="bi {% if session.session_type == 'Individual' %}bi-person{% else %}bi-people{% endif %}"></i> {{ session.session_type }}
-                            </span>
+    <!-- 3. Resultados de Búsqueda (Sesiones) -->
+    {% if sessions %}
+    <div class="results-section">
+        <h2 class="section-title"><i class="bi bi-list-stars"></i> Asesorías Disponibles</h2>
+        <div class="grid-cards">
+            {% for session in sessions %}
+            <div class="glass card session-card">
+                <div class="card-tag">
+                    <i class="bi {% if session.session_type == 'Individual' %}bi-person{% else %}bi-people{% endif %}"></i> {{ session.session_type }}
+                </div>
+                <h3 class="session-topic">{{ session.topic }}</h3>
+                
+                <div class="session-info">
+                    <p><i class="bi bi-person-badge"></i> <span>Asesor:</span> <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}">{{ session.asesor.profile.full_name or session.asesor.username }}</a></p>
+                    <p><i class="bi bi-calendar3"></i> <span>Fecha:</span> {{ session.date.strftime('%d/%m/%Y') }}</p>
+                    <p><i class="bi bi-clock"></i> <span>Horario:</span> {{ session.start_time.strftime('%H:%M') }} - {{ session.end_time.strftime('%H:%M') }}</p>
+                    <div class="capacity-bar-container">
+                        <div class="capacity-info">
+                            <span><i class="bi bi-people-fill"></i> Cupo:</span>
+                            <span>{{ session.enrollments|length }} / {{ session.capacity }}</span>
                         </div>
-                        <p style="font-size: 0.9rem;"><strong><i class="bi bi-person-badge"></i> Asesor:</strong> <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" style="color: var(--primary-color);">{{ session.asesor.profile.full_name or session.asesor.username }}</a></p>
-                        <p style="font-size: 0.9rem;"><strong><i class="bi bi-calendar3"></i> Fecha:</strong> {{ session.date.strftime('%d/%m/%Y') }}</p>
-                        <p style="font-size: 0.9rem;"><strong><i class="bi bi-clock"></i> Horario:</strong> {{ session.start_time.strftime('%H:%M') }} - {{ session.end_time.strftime('%H:%M') }}</p>
-                        <p style="font-size: 0.9rem;"><strong><i class="bi bi-people-fill"></i> Cupo:</strong> {{ session.enrollments|length }} / {{ session.capacity }}</p>
-                        <p style="margin-top: 1rem; font-size: 0.95rem;">{{ session.description[:100] }}...</p>
-                        
-                        <div class="mt-2 text-center">
-                            {% if session.enrollments|length >= session.capacity %}
-                                <button class="btn glass" style="width: 100%; color: var(--text-secondary); cursor: not-allowed;" disabled>
-                                    <i class="bi bi-x-circle"></i> Asesoría Llena
-                                </button>
-                            {% else %}
-                                <form action="{{ url_for('estudiante.enroll', session_id=session.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-primary" style="background-color: var(--text-primary); color: var(--bg-color); width: 100%;">
-                                        <i class="bi bi-check-circle"></i> SOLICITAR ASESORÍA
-                                    </button>
-                                </form>
-                            {% endif %}
-                            <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" class="btn mt-2" style="width: 100%; background: none; border: 1px solid var(--surface-border); border-radius: 8px; color: var(--text-primary);">
-                                <i class="bi bi-eye"></i> VER PERFIL
-                            </a>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ (session.enrollments|length / session.capacity * 100)|round }}%;"></div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
-                {% else %}
-                <p class="text-center mt-4">No se encontraron asesorías disponibles con esos filtros.</p>
-                {% endif %}
+                
+                <p class="session-desc">{{ session.description[:80] }}...</p>
+                
+                <div class="card-actions">
+                    {% if session.enrollments|length >= session.capacity %}
+                        <button class="btn btn-disabled" disabled>
+                            <i class="bi bi-x-circle"></i> LLENO
+                        </button>
+                    {% else %}
+                        <form action="{{ url_for('estudiante.enroll', session_id=session.id) }}" method="POST">
+                            <button type="submit" class="btn btn-action-primary">
+                                <i class="bi bi-check-circle"></i> INSCRIBIRSE
+                            </button>
+                        </form>
+                    {% endif %}
+                    <a href="{{ url_for('main.asesor_profile', asesor_id=session.asesor_id) }}" class="btn btn-action-outline">
+                        PERFIL
+                    </a>
+                </div>
             </div>
+            {% endfor %}
         </div>
     </div>
-    
-    <!-- Profile Widget (Right Sidebar) -->
-    <div>
-        <div class="widget">
-            <div class="widget-header">
-                <i class="bi bi-person"></i> Mi Perfil
+    {% else %}
+    <div class="no-results glass">
+        <i class="bi bi-info-circle"></i>
+        <p>No se encontraron asesorías disponibles con esos filtros.</p>
+    </div>
+    {% endif %}
+
+    <!-- 4. Asesores Recomendados (Carrusel) -->
+    <div class="recommended-section mt-5">
+        <div class="carousel-header">
+            <h2 class="section-title"><i class="bi bi-stars"></i> Asesores Recomendados</h2>
+            <div class="carousel-controls">
+                <button class="carousel-btn prev" onclick="scrollCarousel(-1)"><i class="bi bi-chevron-left"></i></button>
+                <button class="carousel-btn next" onclick="scrollCarousel(1)"><i class="bi bi-chevron-right"></i></button>
             </div>
-            <div class="widget-body text-center">
-                <div style="width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-color); color: #F5EFD9; font-size: 3rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; font-weight: bold;">
-                    {{ current_user.username[0]|upper }}
+        </div>
+        
+        <div class="asesores-carousel" id="asesoresCarousel">
+            <div class="carousel-track">
+                {% for asesor in asesores %}
+                <div class="asesor-card glass">
+                    <div class="asesor-avatar">
+                        {{ asesor.username[0]|upper }}
+                    </div>
+                    <h4 class="asesor-name">{{ asesor.profile.full_name or asesor.username }}</h4>
+                    <div class="asesor-rating">
+                        {% set rating = asesor.profile.rating_avg or 0 %}
+                        {% for i in range(5) %}
+                            <i class="bi bi-star-fill {% if i < rating %}filled{% endif %}"></i>
+                        {% endfor %}
+                        <span>({{ rating }})</span>
+                    </div>
+                    {% if asesor.profile.strengths %}
+                    <p class="asesor-strengths">{{ asesor.profile.strengths[:40] }}{% if asesor.profile.strengths|length > 40 %}...{% endif %}</p>
+                    {% endif %}
+                    <a href="{{ url_for('main.asesor_profile', asesor_id=asesor.id) }}" class="btn btn-view-profile">
+                        Ver Perfil
+                    </a>
                 </div>
-                <h3 style="margin-bottom: 0.25rem; color: var(--text-primary);">{{ current_user.profile.full_name or current_user.username }}</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">Estudiante</p>
-                
-                {% if current_user.profile.focus_areas %}
-                <span class="badge" style="display: inline-block; margin-bottom: 1.5rem; background: var(--surface-color); color: var(--text-primary);">{{ current_user.profile.focus_areas }}</span>
-                {% endif %}
-                
-                <hr style="border: none; border-top: 1px solid var(--surface-border); margin: 1.5rem 0;">
-                
-                <div style="text-align: center; padding: 0 1rem;">
-                    <h2 style="margin: 0; color: var(--text-primary);">{{ current_user.enrollments|length }}</h2>
-                    <p style="font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.05em;">SESIONES TOTALES</p>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
 
 <style>
-@media (max-width: 900px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr !important;
+/* Dashboard Layout */
+.dashboard-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding-bottom: 4rem;
+}
+
+
+/* Search Widget */
+.search-widget {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.search-widget .widget-header {
+    background: linear-gradient(90deg, var(--navbar-bg), #1e3a8a);
+    color: white;
+    border: none;
+    padding: 1.2rem 1.5rem;
+}
+
+.search-form .form-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.search-form .input-group {
+    flex: 1;
+    min-width: 180px;
+    position: relative;
+}
+
+.search-form .input-group i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.search-form .form-control, 
+.search-form .form-select {
+    padding-left: 2.5rem;
+    border: 1px solid #e2e8f0;
+    height: 3rem;
+    transition: all 0.3s ease;
+}
+
+.search-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(30, 90, 168, 0.1);
+}
+
+.btn-search {
+    height: 3rem;
+    padding: 0 2rem;
+    background: var(--primary-color);
+    color: white;
+    min-width: 140px;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+}
+
+/* Results Section */
+.section-title {
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-title i {
+    color: var(--primary-color);
+}
+
+.session-card {
+    padding: 1.5rem;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.session-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.card-tag {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    background: rgba(30, 90, 168, 0.08);
+    padding: 0.2rem 0.75rem;
+    border-radius: 4px;
+}
+
+.session-topic {
+    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
+    padding-right: 5rem;
+    color: var(--navbar-bg);
+}
+
+.session-info {
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.session-info p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.session-info p i {
+    color: var(--primary-color);
+    width: 1rem;
+}
+
+.session-info p span {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.session-info a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.capacity-bar-container {
+    margin-top: 0.8rem;
+}
+
+.capacity-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-bottom: 0.4rem;
+}
+
+.progress-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), #34d399);
+    border-radius: 3px;
+}
+
+.session-desc {
+    font-size: 0.85rem;
+    margin: 1.2rem 0;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+.btn-action-primary {
+    flex: 2;
+    background: var(--navbar-bg);
+    color: white;
+    font-size: 0.8rem;
+    padding: 0.7rem 1rem;
+}
+
+.btn-action-outline {
+    flex: 1;
+    border: 1px solid var(--surface-border);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    padding: 0.7rem 1rem;
+}
+
+.btn-disabled {
+    width: 100%;
+    background: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+/* Carousel Section */
+.carousel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.carousel-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.carousel-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--surface-border);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.carousel-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.asesores-carousel {
+    overflow-x: auto;
+    padding: 1rem 0.5rem;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.asesores-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+}
+
+.asesor-card {
+    width: 240px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.asesor-card:hover {
+    transform: translateY(-10px);
+}
+
+.asesor-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bg-color);
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 auto 1rem auto;
+}
+
+.asesor-name {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.asesor-rating {
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+}
+
+.asesor-rating .bi-star-fill {
+    color: #e2e8f0;
+}
+
+.asesor-rating .bi-star-fill.filled {
+    color: var(--warning-color);
+}
+
+.asesor-strengths {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    height: 2.4rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.btn-view-profile {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    padding: 0.5rem;
+}
+
+.btn-view-profile:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.no-results {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.no-results i {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .search-form .form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .btn-search {
+        width: 100%;
     }
 }
 </style>
+
+<script>
+function scrollCarousel(direction) {
+    const carousel = document.getElementById('asesoresCarousel');
+    const scrollAmount = 260; // card width + gap
+    carousel.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+    });
+}
+</script>
+
 {% endblock %}

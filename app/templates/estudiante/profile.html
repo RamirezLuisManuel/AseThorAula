@@ -1,30 +1,93 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="auth-container glass card" style="max-width: 600px;">
-    <h2 class="text-center mb-2">{{ title }}</h2>
-    <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        <div class="form-group">{{ form.full_name.label }} {{ form.full_name(class="form-control") }}</div>
-        <div class="form-group">{{ form.bio.label }} {{ form.bio(class="form-control", rows=4) }}</div>
-        <div class="form-group">{{ form.strengths.label }} {{ form.strengths(class="form-control") }}</div>
-        <div class="form-group">{{ form.focus_areas.label }} {{ form.focus_areas(class="form-control") }}</div>
-        <div class="form-group mt-2">
-            {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
-        </div>
-    </form>
-    
-    <hr class="mt-4 mb-3">
-    <div class="text-center">
-        {% if pending_request %}
-            <div class="alert alert-info">
-                Tienes una solicitud pendiente para convertirte en Asesor. Un administrador revisará tu petición pronto.
+<div class="profile-grid">
+    <!-- Barra Lateral de Perfil -->
+    <div class="profile-sidebar">
+        <div class="glass card profile-sidebar-card">
+            <div class="avatar-large">{{ current_user.username[0]|upper }}</div>
+            <h3 class="mb-1">{{ current_user.username }}</h3>
+            <span class="badge mb-3">{{ current_user.role }}</span>
+            
+            <div class="profile-stat-box">
+                <div class="stat-item">
+                    <span class="stat-value">{{ current_user.enrollments|length }}</span>
+                    <span class="stat-label">Sesiones</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ current_user.reviews_given|length }}</span>
+                    <span class="stat-label">Reseñas</span>
+                </div>
             </div>
-        {% else %}
-            <h5>¿Quieres convertirte en Asesor?</h5>
-            <p class="text-muted small">Al ser asesor podrás impartir tus propias asesorías.</p>
-            <form action="{{ url_for('estudiante.request_asesor') }}" method="POST">
-                <button type="submit" class="btn btn-secondary">Solicitar rol de Asesor</button>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="profile-main-content">
+        <div class="glass card">
+            <h4 class="form-section-title">
+                <i class="bi bi-person-gear"></i> Configuración de Perfil
+            </h4>
+            
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    <label><i class="bi bi-person-fill"></i> {{ form.full_name.label.text }}</label>
+                    {{ form.full_name(class="form-control", placeholder="Nombre completo") }}
+                </div>
+
+                <div class="form-group">
+                    <label><i class="bi bi-card-text"></i> {{ form.bio.label.text }}</label>
+                    {{ form.bio(class="form-control", rows=3, placeholder="Cuéntanos un poco sobre ti, tus intereses y metas académicas...") }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="bi bi-award-fill"></i> {{ form.strengths.label.text }}</label>
+                        {{ form.strengths(class="form-control", placeholder="Ej: Matemáticas, Física") }}
+                    </div>
+                    <div class="form-group">
+                        <label><i class="bi bi-bullseye"></i> {{ form.focus_areas.label.text }}</label>
+                        {{ form.focus_areas(class="form-control", placeholder="Ej: Álgebra, Cálculo") }}
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    {{ form.submit(class="btn btn-primary px-5") }}
+                </div>
             </form>
+        </div>
+
+        {% if current_user.role == 'Estudiante' %}
+        <div class="mt-4">
+            <div class="glass card cta-card">
+                <div class="cta-icon">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <div class="flex-1">
+                    <h5 class="mb-1">¿Quieres convertirte en Asesor?</h5>
+                    <p class="text-muted small mb-0">Al ser asesor podrás impartir tus propias asesorías y compartir tu conocimiento.</p>
+                </div>
+                <div>
+                    {% if pending_request %}
+                        <div class="alert alert-info py-2 px-3 mb-0" style="font-size: 0.85rem;">
+                            <i class="bi bi-clock-history"></i> Solicitud pendiente
+                        </div>
+                    {% else %}
+                        <form action="{{ url_for('estudiante.request_asesor') }}" method="POST">
+                            <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+                                <i class="bi bi-plus-circle"></i> Solicitar Rol
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% if pending_request %}
+            <p class="text-muted small mt-2 text-center">
+                <i class="bi bi-info-circle"></i> Tu solicitud está siendo revisada por un administrador.
+            </p>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
 </div>

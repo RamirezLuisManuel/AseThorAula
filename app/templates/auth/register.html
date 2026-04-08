@@ -19,28 +19,38 @@
         </div>
         <div class="form-group">
             {{ form.password.label }}
+            <div class="password-wrapper">
+                {% if form.password.errors %}
+                    {{ form.password(class="form-control", style="border-color: var(--danger-color);", id="password-field") }}
+                {% else %}
+                    {{ form.password(class="form-control", id="password-field") }}
+                {% endif %}
+                <i class="bi bi-eye password-toggle" id="toggle-password"></i>
+            </div>
             {% if form.password.errors %}
-                {{ form.password(class="form-control", style="border-color: var(--danger-color);") }}
                 <div style="color: var(--danger-color); font-size: 0.875rem; margin-top: 0.25rem;">
                     {% for error in form.password.errors %}
                         <span>{{ error }}</span>
                     {% endfor %}
                 </div>
-            {% else %}
-                {{ form.password(class="form-control") }}
             {% endif %}
         </div>
         <div class="form-group">
             {{ form.confirm_password.label }}
+            <div class="password-wrapper">
+                {% if form.confirm_password.errors %}
+                    {{ form.confirm_password(class="form-control", style="border-color: var(--danger-color);", id="confirm-password-field") }}
+                {% else %}
+                    {{ form.confirm_password(class="form-control", id="confirm-password-field") }}
+                {% endif %}
+                <i class="bi bi-eye password-toggle" id="toggle-confirm-password"></i>
+            </div>
             {% if form.confirm_password.errors %}
-                {{ form.confirm_password(class="form-control", style="border-color: var(--danger-color);") }}
                 <div style="color: var(--danger-color); font-size: 0.875rem; margin-top: 0.25rem;">
                     {% for error in form.confirm_password.errors %}
                         <span>{{ error }}</span>
                     {% endfor %}
                 </div>
-            {% else %}
-                {{ form.confirm_password(class="form-control") }}
             {% endif %}
         </div>
         <div class="form-group mt-2">
@@ -51,4 +61,19 @@
         <p>¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}" style="color: var(--primary-color);">Inicia Sesión aquí</a></p>
     </div>
 </div>
+
+<script>
+    function setupToggle(toggleId, fieldId) {
+        document.getElementById(toggleId).addEventListener('click', function() {
+            const passwordField = document.getElementById(fieldId);
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
+        });
+    }
+
+    setupToggle('toggle-password', 'password-field');
+    setupToggle('toggle-confirm-password', 'confirm-password-field');
+</script>
 {% endblock %}

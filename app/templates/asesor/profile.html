@@ -1,16 +1,83 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="auth-container glass card" style="max-width: 600px;">
-    <h2 class="text-center mb-2">{{ title }}</h2>
-    <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        <div class="form-group">{{ form.full_name.label }} {{ form.full_name(class="form-control") }}</div>
-        <div class="form-group">{{ form.bio.label }} {{ form.bio(class="form-control", rows=4) }}</div>
-        <div class="form-group">{{ form.strengths.label }} {{ form.strengths(class="form-control") }}</div>
-        <div class="form-group">{{ form.focus_areas.label }} {{ form.focus_areas(class="form-control") }}</div>
-        <div class="form-group mt-2">
-            {{ form.submit(class="btn btn-primary", style="width: 100%;") }}
+<div class="profile-grid">
+    <!-- Barra Lateral de Perfil del Asesor -->
+    <div class="profile-sidebar">
+        <div class="glass card profile-sidebar-card">
+            <div class="avatar-large" style="background: linear-gradient(135deg, #10b981, #059669);">
+                {{ current_user.username[0]|upper }}
+            </div>
+            <h3 class="mb-1">{{ current_user.username }}</h3>
+            <span class="badge mb-3" style="background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2);">
+                <i class="bi bi-patch-check-fill"></i> {{ current_user.role }}
+            </span>
+            
+            <div class="profile-stat-box">
+                <div class="stat-item">
+                    <span class="stat-value">{{ current_user.sessions_given|length }}</span>
+                    <span class="stat-label">Asesorías</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ "%.1f"|format(current_user.profile.rating_avg or 0.0) }}</span>
+                    <span class="stat-label">Rating</span>
+                </div>
+            </div>
         </div>
-    </form>
+
+        <div class="glass card p-3 mt-4">
+            <h6 class="mb-3 text-secondary text-uppercase small" style="letter-spacing: 0.1em;">Acciones Rápidas</h6>
+            <a href="{{ url_for('asesor.new_session') }}" class="btn btn-primary btn-sm w-100 mb-2">
+                <i class="bi bi-calendar-plus"></i> Nueva Sesión
+            </a>
+            <a href="{{ url_for('asesor.sessions') }}" class="btn btn-outline-primary btn-sm w-100">
+                <i class="bi bi-list-task"></i> Ver Mis Sesiones
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="profile-main-content">
+        <div class="glass card">
+            <h4 class="form-section-title">
+                <i class="bi bi-briefcase-fill"></i> Perfil Profesional del Asesor
+            </h4>
+            
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    <label><i class="bi bi-person-bounding-box"></i> {{ form.full_name.label.text }}</label>
+                    {{ form.full_name(class="form-control", placeholder="Nombre completo para mostrar a los estudiantes") }}
+                </div>
+
+                <div class="form-group">
+                    <label><i class="bi bi-award"></i> {{ form.bio.label.text }}</label>
+                    {{ form.bio(class="form-control", rows=4, placeholder="Escribe una biografía profesional. Menciona tu experiencia y por qué deberían elegirte como asesor.") }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="bi bi-stars"></i> {{ form.strengths.label.text }}</label>
+                        {{ form.strengths(class="form-control", placeholder="Habilidades principales") }}
+                    </div>
+                    <div class="form-group">
+                        <label><i class="bi bi-laptop"></i> {{ form.focus_areas.label.text }}</label>
+                        {{ form.focus_areas(class="form-control", placeholder="Áreas de enfoque") }}
+                    </div>
+                </div>
+
+                <div class="text-end mt-4">
+                    {{ form.submit(class="btn btn-primary px-5") }}
+                </div>
+            </form>
+        </div>
+
+        <div class="alert alert-info mt-4 d-flex align-items-center gap-3">
+            <div style="font-size: 1.5rem;"><i class="bi bi-lightbulb-fill"></i></div>
+            <div>
+                <strong>Consejo:</strong> Mantener tu biografía y áreas de enfoque actualizadas ayuda a que más estudiantes encuentren tus servicios.
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -10,16 +10,19 @@
 <body>
     {% if current_user.is_authenticated %}
     <div class="app-wrapper">
-        <aside class="sidebar">
+        <div id="sidebarOverlay" class="sidebar-overlay"></div>
+        <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo" style="height: 30px; width: 30px; object-fit: cover; border-radius: 50%;"> 
                 <span style="font-weight: 700;">ASETHOR APP</span>
             </div>
             
             <nav class="sidebar-nav">
-                <a href="{{ url_for('main.home') }}" class="sidebar-link">
-                    <i class="bi bi-house-door"></i> Inicio
-                </a>
+                {% if current_user.role != 'Estudiante' %}
+                    <a href="{{ url_for('main.home') }}" class="sidebar-link">
+                        <i class="bi bi-house-door"></i> Inicio
+                    </a>
+                {% endif %}
                 {% if current_user.role == 'Super-Admin' or current_user.role == 'Admin' %}
                     <div class="sidebar-section">Administración</div>
                     <a href="{{ url_for('admin.dashboard') }}" class="sidebar-link">
@@ -63,7 +66,12 @@
 
         <main class="main-wrapper">
             <header class="topbar">
-                <div class="topbar-title">{% if title %}{{ title }}{% else %}Inicio{% endif %}</div>
+                <div class="d-flex align-center gap-1">
+                    <button id="sidebarToggle" class="btn-toggle">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <div class="topbar-title">{% if title %}{{ title }}{% else %}Inicio{% endif %}</div>
+                </div>
                 <div class="topbar-profile">
                     <div style="text-align: right; line-height: 1.2;">
                         <div style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">{{ current_user.profile.full_name or current_user.username }}</div>
@@ -114,5 +122,38 @@
     {% else %}
     </main>
     {% endif %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const body = document.body;
+
+            function toggleSidebar() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.toggle('show');
+                    sidebarOverlay.classList.toggle('show');
+                } else {
+                    body.classList.toggle('sidebar-collapsed');
+                }
+            }
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', toggleSidebar);
+            }
+
+            // Cerrar sidebar al cambiar tamaño si estaba abierto en móvil
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

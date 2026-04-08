@@ -1,79 +1,181 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="glass card d-flex gap-1 align-center mb-2" style="padding: 2rem; flex-wrap: wrap;">
-    <div style="flex: 2; min-width: 300px;">
-        <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: var(--primary-color);">{{ asesor.profile.full_name or asesor.username }}</h2>
-        <span class="badge">Asesor Académico</span>
-        <div class="mt-2">
-            <p><strong>Temas que domina:</strong> {{ asesor.profile.strengths or 'No especificado' }}</p>
-            <p><strong>Área enfocada:</strong> {{ asesor.profile.focus_areas or 'No especificado' }}</p>
-            <p class="mt-2">{{ asesor.profile.bio or 'Sin biografía disponible.' }}</p>
-        </div>
-    </div>
-    <div style="flex: 1; text-align: center; min-width: 200px;">
-        <div class="glass" style="display: inline-block; padding: 1.5rem; text-align: center; background: rgba(0,0,0,0.2);">
-            <p style="font-size: 1.2rem; color: var(--text-secondary); margin: 0;">Calificación General</p>
-            <div class="star-rating" style="font-size: 3rem; font-weight: 700;">
-                {{ asesor.profile.rating_avg }} <span style="font-size: 1.5rem; color: var(--text-secondary);">/ 5</span>
-            </div>
-            <p style="font-size: 0.9rem; margin: 0;">({{ reviews|length }} reseñas)</p>
-        </div>
-    </div>
-</div>
-
-<div class="d-flex gap-1" style="align-items: flex-start; flex-wrap: wrap;">
-    <!-- Asesorías Activas -->
-    <div style="flex: 2; min-width: 300px;">
-        <h3 class="mb-2">Asesorías Programadas</h3>
-        {% if sessions %}
-            {% for session in sessions %}
-            <div class="glass card mb-2" style="padding: 1.5rem;">
-                <div class="d-flex justify-between align-center mb-2">
-                    <h4 style="margin: 0; color: var(--primary-color);">{{ session.topic }}</h4>
-                    <span class="badge">{{ session.session_type }}</span>
+<div class="profile-grid">
+    <!-- Sidebar del Asesor -->
+    <div class="profile-sidebar">
+        <div class="glass card profile-sidebar-card p-3">
+            <div class="avatar-large mb-2" style="width: 100px; height: 100px; font-size: 2.5rem;">{{ asesor.username[0]|upper }}</div>
+            <h3 class="mb-1" style="font-size: 1.4rem;">{{ asesor.profile.full_name or asesor.username }}</h3>
+            <span class="badge mb-3">Asesor Académico</span>
+            
+            <div class="profile-stat-box mt-2 mb-3" style="padding-top: 1rem; gap: 0.5rem;">
+                <div class="stat-item">
+                    <span class="stat-value" style="font-size: 1.1rem;">{{ asesor.profile.rating_avg or 0 }}</span>
+                    <span class="stat-label">Rating</span>
                 </div>
-                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Fecha:</strong> {{ session.date.strftime('%d/%m/%Y') }} a las {{ session.start_time.strftime('%H:%M') }}</p>
-                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Cupo:</strong> {{ session.enrollments|length }} / {{ session.capacity }}</p>
-                <p style="margin-bottom: 1rem; font-size: 0.9rem;">{{ session.description }}</p>
-                {% if current_user.is_authenticated and current_user.role == 'Estudiante' %}
-                    {% if session.enrollments|length < session.capacity %}
-                    <form action="{{ url_for('estudiante.enroll', session_id=session.id) }}" method="POST">
-                        <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.5rem 1rem;">Inscribirse como Estudiante</button>
-                    </form>
-                    {% else %}
-                        <button class="btn glass" disabled style="color: var(--text-secondary); cursor: not-allowed;">Asesoría Llena</button>
-                    {% endif %}
-                {% endif %}
-            </div>
-            {% endfor %}
-        {% else %}
-            <p class="glass card">Este asesor no tiene asesorías programadas actualmente.</p>
-        {% endif %}
-    </div>
-
-    <!-- Comentarios -->
-    <div style="flex: 1; min-width: 300px;">
-        <h3 class="mb-2">Reseñas de Estudiantes</h3>
-        {% if reviews %}
-            <div class="glass card" style="padding: 1.5rem; max-height: 600px; overflow-y: auto;">
-                {% for review in reviews %}
-                <div style="border-bottom: 1px solid var(--surface-border); padding-bottom: 1rem; margin-bottom: 1rem;">
-                    <div class="d-flex justify-between align-center mb-2">
-                        <strong>{{ review.student_reviewer.profile.full_name or review.student_reviewer.username }}</strong>
-                        <span class="star-rating" style="font-size: 1rem;">★ {{ review.rating }}</span>
-                    </div>
-                    {% if review.comment %}
-                        <p style="font-size: 0.9rem; font-style: italic;">"{{ review.comment }}"</p>
-                    {% else %}
-                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Sin comentario adicional.</p>
-                    {% endif %}
-                    <p style="font-size: 0.8rem; color: var(--text-secondary); text-align: right; margin: 0;">{{ review.created_at.strftime('%d/%m/%Y') }}</p>
+                <div class="stat-item">
+                    <span class="stat-value" style="font-size: 1.1rem;">{{ reviews|length }}</span>
+                    <span class="stat-label">Reseñas</span>
                 </div>
+            </div>
+
+            <div class="star-rating mb-3" style="font-size: 1.2rem;">
+                {% set rating = asesor.profile.rating_avg or 0 %}
+                {% for i in range(5) %}
+                    <i class="bi bi-star-fill {% if i < rating %}filled{% endif %}" style="color: {% if i < rating %}var(--warning-color){% else %}#e2e8f0{% endif %};"></i>
                 {% endfor %}
             </div>
-        {% else %}
-            <p class="glass card">Aún no hay reseñas.</p>
-        {% endif %}
+
+            <div class="sidebar-details text-start mt-3" style="border-top: 1px solid var(--surface-border); padding-top: 1rem;">
+                <div class="mb-3">
+                    <h6 class="mb-1" style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">Temas</h6>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% if asesor.profile.strengths %}
+                            {% for strength in asesor.profile.strengths.split(',') %}
+                                <span class="badge bg-light" style="font-size: 0.7rem; background: rgba(30, 90, 168, 0.05); color: var(--primary-color);">{{ strength.strip() }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted small">No especificado</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <h6 class="mb-1" style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary);">Enfoque</h6>
+                    <p class="small mb-0">{{ asesor.profile.focus_areas or 'No especificado' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="profile-main-content">
+        <!-- Biografía Compacta -->
+        <div class="glass card p-3 mb-3">
+            <h4 class="form-section-title mb-2" style="font-size: 1.1rem;">
+                <i class="bi bi-person-video2"></i> Biografía
+            </h4>
+            <p class="mb-0" style="font-size: 0.95rem; line-height: 1.5;">{{ asesor.profile.bio or 'Sin biografía disponible.' }}</p>
+        </div>
+
+        <div class="content-dual-grid">
+            <!-- Asesorías Programadas -->
+            <div class="sessions-column">
+                <h4 class="form-section-title mb-3" style="font-size: 1.1rem;">
+                    <i class="bi bi-calendar-check"></i> Próximas Asesorías
+                </h4>
+                
+                {% if sessions %}
+                <div class="d-flex flex-column gap-2">
+                    {% for session in sessions %}
+                    <div class="glass card p-3 mb-0 compact-session-card">
+                        <div class="d-flex justify-between align-center mb-1">
+                            <h5 class="topic-title">{{ session.topic }}</h5>
+                            <span class="type-badge">{{ session.session_type }}</span>
+                        </div>
+                        
+                        <div class="d-flex gap-3 small text-secondary mb-2">
+                            <span><i class="bi bi-calendar3"></i> {{ session.date.strftime('%d/%b') }}</span>
+                            <span><i class="bi bi-clock"></i> {{ session.start_time.strftime('%H:%M') }}</span>
+                            <span><i class="bi bi-people"></i> {{ session.enrollments|length }}/{{ session.capacity }}</span>
+                        </div>
+
+                        {% if current_user.is_authenticated and current_user.role == 'Estudiante' %}
+                            {% if session.enrollments|length < session.capacity %}
+                            <form action="{{ url_for('estudiante.enroll', session_id=session.id) }}" method="POST">
+                                <button type="submit" class="btn btn-primary btn-sm w-100 py-1">Inscribirse</button>
+                            </form>
+                            {% else %}
+                                <button class="btn btn-sm w-100 py-1" disabled style="background: #f1f5f9; color: #94a3b8;">Lleno</button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="glass card p-3 text-center text-muted">
+                    <p class="small mb-0">Sin asesorías programadas.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Reseñas -->
+            <div class="reviews-column">
+                <h4 class="form-section-title mb-3" style="font-size: 1.1rem;">
+                    <i class="bi bi-chat-left-quote"></i> Reseñas
+                </h4>
+                
+                {% if reviews %}
+                <div class="reviews-scroll-area">
+                    {% for review in reviews %}
+                    <div class="review-item mb-2 pb-2" style="border-bottom: 1px solid var(--surface-border);">
+                        <div class="d-flex justify-between align-center mb-1">
+                            <span class="small fw-bold">{{ review.student_reviewer.username }}</span>
+                            <span class="small" style="color: var(--warning-color);">★ {{ review.rating }}</span>
+                        </div>
+                        <p class="small text-muted italic mb-0">"{{ review.comment or 'Sin comentario'|truncate(60) }}"</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="glass card p-3 text-center text-muted">
+                    <p class="small mb-0">Sin reseñas aún.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .w-100 { width: 100%; }
+    .bg-light { background: #f8fafc; }
+    .content-dual-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 1.5rem;
+    }
+    .topic-title {
+        margin: 0; 
+        color: var(--primary-color); 
+        font-size: 1rem; 
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .type-badge {
+        font-size: 0.65rem;
+        padding: 0.1rem 0.4rem;
+        background: rgba(30, 90, 168, 0.1);
+        color: var(--primary-color);
+        border-radius: 4px;
+        font-weight: 600;
+    }
+    .compact-session-card {
+        padding: 1rem !important;
+        transition: transform 0.2s;
+    }
+    .compact-session-card:hover {
+        transform: scale(1.02);
+    }
+    .reviews-scroll-area {
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+    }
+    .reviews-scroll-area::-webkit-scrollbar {
+        width: 4px;
+    }
+    .reviews-scroll-area::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+    @media (max-width: 1200px) {
+        .content-dual-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 {% endblock %}
+
+

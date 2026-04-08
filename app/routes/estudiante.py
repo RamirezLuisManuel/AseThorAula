@@ -67,7 +67,9 @@ def search():
         query = query.filter(TutoringSession.date == date)
         
     sessions = query.order_by(TutoringSession.date, TutoringSession.start_time).all()
-    return render_template('estudiante/search.html', title='Buscar Asesorías', sessions=sessions)
+    # Fetch all advisors for the carousel
+    asesores = User.query.filter_by(role='Asesor').all()
+    return render_template('estudiante/search.html', title='Buscar Asesorías', sessions=sessions, asesores=asesores)
 
 @estudiante.route('/enroll/<int:session_id>', methods=['POST'])
 def enroll(session_id):

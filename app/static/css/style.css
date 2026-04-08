@@ -301,6 +301,8 @@ p {
     position: fixed;
     height: 100vh;
     overflow-y: auto;
+    z-index: 1001;
+    transition: transform 0.3s ease, width 0.3s ease;
 }
 
 .sidebar-header {
@@ -350,6 +352,73 @@ p {
     display: flex;
     flex-direction: column;
     background-color: var(--bg-color);
+    transition: margin-left 0.3s ease;
+}
+
+/* Sidebar Toggle States */
+.sidebar-collapsed .sidebar {
+    transform: translateX(-250px);
+}
+
+.sidebar-collapsed .main-wrapper {
+    margin-left: 0;
+}
+
+.btn-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-250px);
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .main-wrapper {
+        margin-left: 0;
+    }
+    
+    .sidebar-overlay.show {
+        display: block;
+    }
+    
+    .topbar {
+        padding: 1rem;
+    }
+    
+    .topbar-title {
+        font-size: 1.2rem;
+    }
 }
 
 .topbar {
@@ -407,3 +476,141 @@ p {
 .widget-body {
     padding: 1.5rem;
 }
+
+/* Password Toggle styles */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper .form-control {
+    padding-right: 2.8rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    z-index: 10;
+    transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
+}
+
+/* Profile Enhancements */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 992px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.profile-sidebar-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+}
+
+.avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--primary-color), #4F46E5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+    box-shadow: 0 8px 16px rgba(30, 90, 168, 0.2);
+    border: 4px solid #ffffff;
+}
+
+.profile-stat-box {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--surface-border);
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(30, 90, 168, 0.1);
+    color: var(--primary-color);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cta-card {
+    background: linear-gradient(135deg, rgba(30, 90, 168, 0.03) 0%, rgba(79, 70, 229, 0.07) 100%);
+    border: 1px dashed var(--primary-color);
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.cta-icon {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.text-end {
+    text-align: right;
+}
+
+.flex-1 {
+    flex: 1;
+}

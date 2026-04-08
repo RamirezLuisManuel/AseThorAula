@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, abort
+from flask_login import current_user
+from flask import Blueprint, render_template, abort, url_for, redirect
 from app.models import User, TutoringSession, Review
 
 main = Blueprint('main', __name__)
@@ -6,6 +7,8 @@ main = Blueprint('main', __name__)
 @main.route('/')
 @main.route('/home')
 def home():
+    if current_user.is_authenticated and current_user.role == 'Estudiante':
+        return redirect(url_for('estudiante.search'))
     return render_template('main/home.html')
 
 @main.route('/asesor/<int:asesor_id>')
