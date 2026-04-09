@@ -26,13 +26,13 @@
                 <td style="padding: 1rem;">{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                 <td style="padding: 1rem;"><span class="badge" style="background: var(--warning-color); color: #000;">{{ req.status }}</span></td>
                 <td style="padding: 1rem;">
-                    <form action="{{ url_for('admin.approve_request', req_id=req.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                    <form action="{{ url_for('admin.approve_request', req_id=req.id) }}" method="POST" style="display:inline;" id="form-approve-{{ req.id }}">
+                        <button type="button" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="confirmAction('approve', '{{ req.id }}')">
                             <i class="bi bi-check-lg"></i> Aprobar
                         </button>
                     </form>
-                    <form action="{{ url_for('admin.reject_request', req_id=req.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="return confirm('¿Estás seguro de rechazar esta solicitud?');">
+                    <form action="{{ url_for('admin.reject_request', req_id=req.id) }}" method="POST" style="display:inline;" id="form-reject-{{ req.id }}">
+                        <button type="button" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="confirmAction('reject', '{{ req.id }}')">
                             <i class="bi bi-x-lg"></i> Rechazar
                         </button>
                     </form>
@@ -48,4 +48,48 @@
         </tbody>
     </table>
 </div>
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmAction(actionType, reqId) {
+        let titleText = '';
+        let confirmBtnText = '';
+        let confirmColor = '';
+        let formId = '';
+
+        if (actionType === 'approve') {
+            titleText = '¿Aprobar esta solicitud?';
+            confirmBtnText = 'Sí, aprobar';
+            confirmColor = 'var(--primary-color)';
+            formId = 'form-approve-' + reqId;
+        } else {
+            titleText = '¿Rechazar esta solicitud?';
+            confirmBtnText = 'Sí, rechazar';
+            confirmColor = 'var(--danger-color)';
+            formId = 'form-reject-' + reqId;
+        }
+
+        Swal.fire({
+            title: titleText,
+            text: actionType === 'approve' ? "El usuario obtendrá el rol de Asesor." : "La solicitud será descartada definitivamente.",
+            icon: actionType === 'approve' ? "question" : "warning",
+            showCancelButton: true,
+            confirmButtonColor: confirmColor,
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: confirmBtnText,
+            cancelButtonText: 'Cancelar',
+            background: 'var(--surface-color)',
+            color: 'var(--text-primary)',
+            customClass: {
+                popup: 'glass'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(formId).submit();
+            }
+        });
+    }
+</script>
+
 {% endblock %}

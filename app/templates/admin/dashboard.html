@@ -31,8 +31,8 @@
                 <td style="padding: 1rem;">
                     {% if user.id != current_user.id and user.role != 'Super-Admin' %}
                         {% if current_user.role == 'Super-Admin' or (current_user.role == 'Admin' and user.role not in ['Super-Admin', 'Admin']) %}
-                            <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="return confirm('¿Estás seguro de eliminar a este usuario?');">
+                            <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;" id="form-delete-{{ user.id }}">
+                                <button type="button" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="confirmDelete('{{ user.id }}')">
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
                             </form>
@@ -44,4 +44,31 @@
         </tbody>
     </table>
 </div>
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(userId) {
+        Swal.fire({
+            title: '¿Eliminar a este usuario?',
+            text: "Esta acción es destructiva y no se puede deshacer.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: 'var(--danger-color)',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            background: 'var(--surface-color)',
+            color: 'var(--text-primary)',
+            customClass: {
+                popup: 'glass'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-delete-' + userId).submit();
+            }
+        });
+    }
+</script>
+
 {% endblock %}

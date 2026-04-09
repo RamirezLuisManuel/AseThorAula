@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="d-flex justify-between align-center mb-2">
-    <h2><i class="bi bi-calendar-event"></i> Mis Asesorías</h2>
-    <a href="{{ url_for('asesor.new_session') }}" class="btn btn-primary">
+<div style="width: 100%; margin-bottom: 2rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 1.5rem;">
+    <h2 style="margin-bottom: 1rem;"><i class="bi bi-calendar-event"></i> Mis Asesorías</h2>
+    <a href="{{ url_for('asesor.new_session') }}" class="btn btn-primary" style="display: inline-block;">
         <i class="bi bi-plus-circle"></i> Crear Nueva Asesoría
     </a>
 </div>
@@ -25,8 +25,8 @@
             <a href="{{ url_for('asesor.edit_session', session_id=session.id) }}" class="btn glass" style="flex:1; padding: 0.5rem; color:var(--text-primary);">
                 <i class="bi bi-pencil"></i> Editar
             </a>
-            <form action="{{ url_for('asesor.delete_session', session_id=session.id) }}" method="POST" style="flex:1; display:flex;">
-                <button type="submit" class="btn btn-danger" style="flex:1; padding: 0.5rem;" onclick="return confirm('¿Eliminar asesoría?');">
+            <form action="{{ url_for('asesor.delete_session', session_id=session.id) }}" method="POST" style="flex:1; display:flex;" id="form-delete-{{ session.id }}">
+                <button type="button" class="btn btn-danger" style="flex:1; padding: 0.5rem;" onclick="confirmDelete('{{ session.id }}')">
                     <i class="bi bi-trash"></i> Eliminar
                 </button>
             </form>
@@ -37,4 +37,31 @@
 {% else %}
 <p class="text-center mt-4 glass card"><i class="bi bi-info-circle"></i> No tienes asesorías creadas aún.</p>
 {% endif %}
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(sessionId) {
+        Swal.fire({
+            title: '¿Eliminar asesoría?',
+            text: "Esta acción no se puede deshacer.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: 'var(--danger-color)',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            background: 'var(--surface-color)',
+            color: 'var(--text-primary)',
+            customClass: {
+                popup: 'glass'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-delete-' + sessionId).submit();
+            }
+        });
+    }
+</script>
+
 {% endblock %}
